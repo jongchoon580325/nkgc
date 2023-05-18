@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>나의 웹사이트</title>
+
+    <!-- 부트스트랩 링크 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- 한국어 CSS 링크 -->
+    <!--<link rel="stylesheet" href="https://cdn.rawgit.com/m-mujica/Ubuntu-CSS/master/ubuntu.css"> -->
+    <link rel="stylesheet" href="https://s3.ap-northeast-2.amazonaws.com/materials.spartacodingclub.kr/easygpt/default.css"> -->
+
+    <!-- CSS -->
+    <style>
+        /* 카드 색상 */
+        .card:nth-child(1) {
+            background-color: #F7CAC9;
+        }
+
+        .card:nth-child(2) {
+            background-color: #92A8D1;
+        }
+
+        .card:nth-child(3) {
+            background-color: #B5EAD7;
+        }
+
+        /* 이미지 영역에 마우스가 올라가면 약간 움직이는 이니메이션 */
+        .card-img-top:hover {
+            animation: hover 1s ease-in-out alternate;
+        }
+
+        /* 이니메이션 */
+        @keyframes hover {
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+
+            100% {
+                transform: translate3d(0, -5px, 0);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <header class="container">
+        <h1>This is My Wonderfull Life</h1>
+    </header>
+    <br><br><br>
+    <!-- 첫 번째 섹션 -->
+    <section class="container">
+        <h2>나의 주방일기</h2>
+        <p>나의 삶은 여기서부터 시작된다.</p>
+
+        <div class="card-deck">
+            <div class="card">
+                <img class="card-img-top" src="https://source.unsplash.com/400x300/?wood,furniture" alt="카드 이미지">
+                <div class="card-body">
+                    <h5 class="card-title">첫 번째 카드</h5>
+                    <p class="card-text">여기는 첫 번째 카드 내용입니다.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top" src="https://source.unsplash.com/400x300/?table,dinner" alt="카드 이미지">
+                <div class="card-body">
+                    <h5 class="card-title">두 번째 카드</h5>
+                    <p class="card-text">여기는 두 번째 카드 내용입니다.</p>
+                </div>
+            </div>
+            <div class="card">
+                <img class="card-img-top" src="https://source.unsplash.com/400x300/?kitchen,food" alt="카드 이미지">
+                <div class="card-body">
+                    <h5 class="card-title">세 번째 카드</h5>
+                    <p class="card-text">여기는 세 번째 카드 내용입니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- 두 번째 섹션 -->
+
+
+
+<!-- 세 번째 섹션 -->
+
+
+
+
+    <!-- Footer 섹션 -->
+    <footer class="container">
+        <p>CopyRight &copy; 2001~2023 대한예수교장로회 대유평교회. All Rights Reserved.</p>
+    </footer>
+
+    <!-- 부트스트랩 자바스크립트 링크 -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNSG15M"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
