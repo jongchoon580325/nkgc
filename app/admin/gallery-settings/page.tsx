@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import NotificationModal from '@/app/components/common/NotificationModal';
 
 interface GalleryPost {
     id: number;
@@ -52,6 +53,21 @@ export default function GallerySettingsPage() {
     const [posts, setPosts] = useState<GalleryPost[]>([]);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+    // Modal State
+    const [modal, setModal] = useState<{
+        isOpen: boolean;
+        type: 'alert' | 'confirm';
+        title: string;
+        message: string;
+        onConfirm?: () => void;
+        isDestructive?: boolean;
+    }>({
+        isOpen: false,
+        type: 'alert',
+        title: '',
+        message: '',
+    });
 
     // Backup states
     const [showImportModal, setShowImportModal] = useState(false);
@@ -119,38 +135,48 @@ export default function GallerySettingsPage() {
             });
 
             if (res.ok) {
-                alert('설정이 저장되었습니다.');
+                showMessage('success', '설정이 저장되었습니다.');
             } else {
                 const data = await res.json();
-                alert(data.error || '저장 실패');
+                showMessage('error', data.error || '저장 실패');
             }
         } catch (error) {
             console.error('Error saving settings:', error);
-            alert('저장 중 오류가 발생했습니다.');
+            showMessage('error', '저장 중 오류가 발생했습니다.');
         } finally {
             setSaving(false);
         }
     };
 
-    const handleDeletePost = async (postId: number) => {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
+    const handleDeletePost = (postId: number) => {
+        setModal({
+            isOpen: true,
+            type: 'confirm',
+            title: '게시글 삭제',
+            message: '정말 이 게시글을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.',
+            isDestructive: true,
+            onConfirm: async () => {
+                try {
+                    const res = await fetch(`/api/posts/${postId}`, {
+                        method: 'DELETE',
+                    });
 
-        try {
-            const res = await fetch(`/api/posts/${postId}`, {
-                method: 'DELETE',
-            });
-
-            if (res.ok) {
-                alert('삭제되었습니다.');
-                fetchPosts();
-            } else {
-                const data = await res.json();
-                alert(data.error || '삭제 실패');
+                    if (res.ok) {
+                        showMessage('success', '삭제되었습니다.');
+                        fetchPosts();
+                        setModal(prev => ({ ...prev, isOpen: false }));
+                    } else {
+                        const data = await res.json();
+                        showMessage('error', data.error || '삭제 실패');
+                        setModal(prev => ({ ...prev, isOpen: false }));
+                    }
+                } catch (error) {
+                    console.error('Error deleting post:', error);
+                    showMessage('error', '삭제 중 오류가 발생했습니다.');
+                    setModal(prev => ({ ...prev, isOpen: false }));
+                }
             }
-        } catch (error) {
-            console.error('Error deleting post:', error);
-            alert('삭제 중 오류가 발생했습니다.');
-        }
+        });
     };
 
     const showMessage = (type: 'success' | 'error', text: string) => {
@@ -551,6 +577,17 @@ export default function GallerySettingsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Notification Modal */}
+            <NotificationModal
+                isOpen={modal.isOpen}
+                onClose={() => setModal(prev => ({ ...prev, isOpen: false }))}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+                onConfirm={modal.onConfirm}
+                isDestructive={modal.isDestructive}
+            />
         </div>
     );
 }

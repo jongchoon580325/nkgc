@@ -132,7 +132,7 @@ model FeeStatus {
 // --- 게시판 통합 관련 스키마 ---
 
 // SQLite는 Enum을 지원하지 않으므로 String으로 처리하고 애플리케이션 레벨에서 관리
-// BoardType: NOTICE, FREE, MEMBER, FORM_ADMIN, FORM_SELF, EXAM_DEPT, EXAM_USER, GALLERY
+// BoardType: NOTICE, FREE, MEMBER, FORM_ADMIN, FORM_SELF, EXAM_DEPT, EXAM_USER, GALLERY, VIDEO, MEETING_MINUTES
 
 model Post {
   id          Int       @id @default(autoincrement())

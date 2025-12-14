@@ -25,7 +25,7 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [gridColumns, setGridColumns] = useState(4);
-    const [viewMode, setViewMode] = useState<'new_tab' | 'flip_book'>('new_tab');
+    const [viewMode, setViewMode] = useState<'new_tab' | 'flip_book'>('flip_book');
     const [search, setSearch] = useState('');
 
     // Viewer State
@@ -48,7 +48,7 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
                     ? JSON.parse(data.settings)
                     : data.settings;
                 setGridColumns(settings.gridColumns || 4);
-                setViewMode(settings.viewMode || 'new_tab');
+                setViewMode(settings.viewMode || 'flip_book');
             }
         } catch (error) {
             console.error('Error fetching settings:', error);
@@ -139,14 +139,27 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
                         <div
                             key={post.id}
                             onClick={() => handleCardClick(post)}
-                            className="aspect-square bg-[#338a37] rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer flex flex-col items-center justify-center p-4 text-center group transform hover:-translate-y-1"
+                            className="aspect-[3/4] max-w-[180px] mx-auto rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer flex flex-col items-center text-center group transform hover:-translate-y-1 relative overflow-hidden"
+                            style={{
+                                backgroundImage: 'url(/pdf/노회록/00-겉표지.jpg)',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                            }}
                         >
-                            <h3 className="text-[#c8cfc9] font-bold text-xl md:text-2xl mb-2 group-hover:text-white transition-colors line-clamp-2">
-                                {post.title}
-                            </h3>
-                            <p className="text-[#d7ddf7] text-sm font-medium opacity-80 group-hover:opacity-100 transition-opacity">
-                                남경기노회 고시부
-                            </p>
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+
+                            {/* Content Wrapper */}
+                            <div className="relative z-10 flex flex-col items-center justify-center h-full w-full p-4">
+                                {/* Title Area - Centered */}
+                                <div className="flex items-center justify-center w-full h-full">
+                                    <h3
+                                        className="text-white drop-shadow-md font-bold text-lg leading-snug line-clamp-3 break-keep"
+                                    >
+                                        {post.title}
+                                    </h3>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>

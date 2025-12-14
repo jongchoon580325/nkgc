@@ -1,3 +1,11 @@
+42. [2025-12-14 15:00] Commit: a8c2e91
+   Title: feat: Enhance Gallery UI and Exam PDF Viewer, Improve Admin Safety
+   Description: Implemented ripple effect and animation delay in Gallery, replaced delete alerts with NotificationModal in Admin Gallery Settings, redesigned Exam Material template with book cover style, and enhanced PDFFlipViewer with zoom controls and better responsive layout.
+
+41. [2025-12-13 15:51] Commit: 297b39e
+   Title: fix: Restore legacy board data and fix category mappings for FORM_SELF
+   Description: Restored missing posts from SQL dump (Notice, Free, Form Admin, Gallery, Video, etc.) after rollback. Fixed 'FORM_SELF' categories and mapped 20 posts.
+
 40. [2025-12-11 17:45] Commit: 15490e2
    Title: feat: 회원관리 CSV 기능 개선, 노회원현황 페이지 연동
    Description: CSV 가져오기 덮어쓰기 로직+프로그레스 바, 전체 삭제 버튼(admin/master 보호), 테이블 페이지네이션(기본 20개), 권한 표시 로직 수정(목사/장로 정회원), 노회원현황 position 필드 필터링, 장로회원 시무장로 표시

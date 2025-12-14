@@ -9,6 +9,7 @@ export const BOARD_TYPES = {
     EXAM_USER: 'EXAM_USER',
     GALLERY: 'GALLERY',
     VIDEO: 'VIDEO',
+    MEETING_MINUTES: 'MEETING_MINUTES',
 } as const;
 
 export type BoardType = typeof BOARD_TYPES[keyof typeof BOARD_TYPES];
@@ -94,5 +95,13 @@ export const BOARD_CONFIG: Record<BoardType, {
         writePermission: 'admin',
         canComment: true,
         canLike: true,
+    },
+    [BOARD_TYPES.MEETING_MINUTES]: {
+        title: '노회록 자료실',
+        description: '노회록 관련 자료입니다.',
+        viewType: 'list',
+        writePermission: 'admin',
+        canComment: false,
+        canLike: false,
     },
 };

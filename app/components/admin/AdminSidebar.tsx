@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubMenuItem {
     name: string;
@@ -47,6 +48,18 @@ export default function AdminSidebar() {
             ),
         },
         {
+            name: '노회소개',
+            icon: (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            ),
+            submenu: [
+                { name: '임원 관리', href: '/admin/officers' },
+                { name: '콘텐츠 관리', href: '/admin/content' },
+            ]
+        },
+        {
             name: '노회행정',
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,32 +84,21 @@ export default function AdminSidebar() {
             submenu: [
                 { name: '규칙관리', href: '/admin/rules' },
                 { name: '결의서관리', href: '/admin/resolutions' },
+                { name: '노회록 관리', href: '/admin/meeting' },
                 { name: '사진자료실 관리', href: '/admin/gallery-settings' },
                 { name: '영상자료실 관리', href: '/admin/video-settings' },
                 { name: '응시자 관리', href: '/admin/exam' },
             ]
         },
         {
-            name: '노회소개',
+            name: '노회알림',
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
             ),
             submenu: [
-                { name: '임원 관리', href: '/admin/officers' },
-                { name: '콘텐츠 관리', href: '/admin/content' },
-            ]
-        },
-        {
-            name: '기관소개',
-            icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-            ),
-            submenu: [
-                { name: '기관 관리', href: '/admin/organizations' },
+                { name: '게시판 설정', href: '/admin/board-settings' },
             ]
         },
         {
@@ -111,14 +113,14 @@ export default function AdminSidebar() {
             ]
         },
         {
-            name: '노회알림/서식',
+            name: '기관소개',
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
             ),
             submenu: [
-                { name: '게시판 설정', href: '/admin/board-settings' },
+                { name: '기관 관리', href: '/admin/organizations' },
             ]
         },
         {
@@ -153,6 +155,7 @@ export default function AdminSidebar() {
             ),
             submenu: [
                 { name: '데이터 관리', href: '/admin/data-management' },
+                { name: '메뉴 관리', href: '/admin/system/menu' },
             ]
         },
     ];
@@ -215,38 +218,48 @@ export default function AdminSidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+            <nav className="flex-1 p-4 space-y-2 overflow-y-auto w-full">
                 {menuItems.map((item) => {
                     const active = isCategoryActive(item);
                     const expanded = expandedMenus.includes(item.name);
 
                     return (
-                        <div key={item.name} className="mb-1">
+                        <div key={item.name} className="mb-1 relative">
+                            {/* Main Menu Item */}
                             <div
                                 onClick={() => {
                                     if (item.submenu) {
                                         toggleMenu(item.name);
                                     }
                                 }}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${active && !item.submenu // 단일 메뉴이면서 활성화된 경우
-                                    ? 'bg-primary-blue text-white shadow-lg'
-                                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                                    } ${active && item.submenu ? 'text-white' : ''}`} // 서브메뉴가 있고 활성화된 경우 텍스트 밝게
+                                className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-colors cursor-pointer z-10 ${active && !item.submenu ? '!text-yellow-300 font-bold' : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                                    }`}
                             >
+                                {/* Moving Blue Background for Active Item (Single Menu) */}
+                                {active && !item.submenu && (
+                                    <motion.div
+                                        layoutId="active-menu"
+                                        className="absolute inset-0 bg-blue-500 rounded-lg -z-10 shadow-lg"
+                                        initial={false}
+                                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                                    />
+                                )}
+
+                                {/* Icon & Label */}
                                 {item.href && !item.submenu ? (
                                     <Link href={item.href} className="flex items-center gap-3 w-full">
-                                        <span className="flex-shrink-0">{item.icon}</span>
-                                        {!isCollapsed && <span className="flex-1 font-medium">{item.name}</span>}
+                                        <span className="flex-shrink-0 relative z-20">{item.icon}</span>
+                                        {!isCollapsed && <span className="flex-1 font-medium relative z-20">{item.name}</span>}
                                     </Link>
                                 ) : (
-                                    <>
-                                        <span className="flex-shrink-0">{item.icon}</span>
+                                    <div className="flex items-center gap-3 w-full">
+                                        <span className="flex-shrink-0 relative z-20">{item.icon}</span>
                                         {!isCollapsed && (
                                             <>
-                                                <span className="flex-1 font-medium">{item.name}</span>
+                                                <span className="flex-1 font-medium relative z-20">{item.name}</span>
                                                 {item.submenu && (
                                                     <svg
-                                                        className={`w-4 h-4 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+                                                        className={`w-4 h-4 transition-transform duration-200 relative z-20 ${expanded ? 'rotate-180' : ''}`}
                                                         fill="none"
                                                         stroke="currentColor"
                                                         viewBox="0 0 24 24"
@@ -256,25 +269,35 @@ export default function AdminSidebar() {
                                                 )}
                                             </>
                                         )}
-                                    </>
+                                    </div>
                                 )}
                             </div>
 
                             {/* Submenu */}
                             {!isCollapsed && item.submenu && expanded && (
                                 <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-700 pl-2">
-                                    {item.submenu.map((sub) => (
-                                        <Link
-                                            key={sub.href}
-                                            href={sub.href}
-                                            className={`block px-4 py-2 text-sm rounded-lg transition-colors ${isActive(sub.href)
-                                                ? 'bg-gray-700 text-white font-medium'
-                                                : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                                                }`}
-                                        >
-                                            {sub.name}
-                                        </Link>
-                                    ))}
+                                    {item.submenu.map((sub) => {
+                                        const subActive = isActive(sub.href);
+                                        return (
+                                            <Link
+                                                key={sub.href}
+                                                href={sub.href}
+                                                className={`relative block px-4 py-2 text-sm rounded-lg transition-colors z-10 ${subActive ? '!text-yellow-300 font-bold' : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                                                    }`}
+                                            >
+                                                {/* Moving Blue Background for Active Submenu Item */}
+                                                {subActive && (
+                                                    <motion.div
+                                                        layoutId="active-menu"
+                                                        className="absolute inset-0 bg-blue-500 rounded-lg -z-10 shadow-lg"
+                                                        initial={false}
+                                                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                                                    />
+                                                )}
+                                                <span className="relative z-20">{sub.name}</span>
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

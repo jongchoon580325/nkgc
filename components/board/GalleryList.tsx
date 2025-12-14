@@ -224,6 +224,28 @@ export default function GalleryList({ boardType }: GalleryListProps) {
 
     return (
         <main className="min-h-screen bg-gray-50">
+            <style jsx global>{`
+                @keyframes ripple {
+                    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.5; }
+                    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+                }
+                .ripple-circle {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 100px;
+                    height: 100px;
+                    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+                    border-radius: 50%;
+                    opacity: 0;
+                    pointer-events: none;
+                    z-index: 10;
+                }
+                .group:hover .ripple-circle {
+                    animation: ripple 1.5s infinite linear;
+                }
+            `}</style>
             <PageHeader title={config.title} />
 
             {/* Content Section */}
@@ -282,10 +304,10 @@ export default function GalleryList({ boardType }: GalleryListProps) {
                                                         <img
                                                             src={imageUrl}
                                                             alt={post.title}
-                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 delay-500"
                                                         />
                                                     )}
-
+                                                    <div className="ripple-circle" />
                                                     {isVideo && (
                                                         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-all pointer-events-none">
                                                             <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
