@@ -1,3 +1,7 @@
+43. [2025-12-14 17:42] Commit: 543cded
+   Title: feat: Add Meeting Minutes and Dynamic Menu Management
+   Description: Implemented public and admin pages for Meeting Minutes board, updated navigation, created 'Menu Management' system for toggling menu visibility, and reordered admin sidebar.
+
 42. [2025-12-14 15:00] Commit: a8c2e91
    Title: feat: Enhance Gallery UI and Exam PDF Viewer, Improve Admin Safety
    Description: Implemented ripple effect and animation delay in Gallery, replaced delete alerts with NotificationModal in Admin Gallery Settings, redesigned Exam Material template with book cover style, and enhanced PDFFlipViewer with zoom controls and better responsive layout.
