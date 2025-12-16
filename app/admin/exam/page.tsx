@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import FileUploader from '@/components/board/FileUploader';
+import BoardSettingsModal from '@/components/admin/BoardSettingsModal';
+import { BOARD_TYPES } from '@/lib/board-config';
 
 interface ExamMaterial {
     id: number;
@@ -28,18 +30,14 @@ export default function AdminExamPage() {
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [editingMaterial, setEditingMaterial] = useState<ExamMaterial | null>(null);
     const [title, setTitle] = useState('');
     const [files, setFiles] = useState<File[]>([]);
     const [existingFiles, setExistingFiles] = useState<any[]>([]);
 
-    // Settings State
-    const [gridColumns, setGridColumns] = useState(4);
-    const [viewMode, setViewMode] = useState<'new_tab' | 'flip_book'>('new_tab');
-
     useEffect(() => {
         fetchMaterials();
-        fetchSettings();
     }, [page]);
 
     const fetchMaterials = async () => {
@@ -56,107 +54,67 @@ export default function AdminExamPage() {
         }
     };
 
-    const fetchSettings = async () => {
-        try {
-            const res = await fetch('/api/board-settings/EXAM_USER');
-            const data = await res.json();
-            if (data.settings) {
-                // API returns parsed object, so use it directly
-                // If it happens to be a string (legacy), parse it
-                const settings = typeof data.settings === 'string'
-                    ? JSON.parse(data.settings)
-                    : data.settings;
-                setGridColumns(settings.gridColumns || 4);
-                setViewMode(settings.viewMode || 'new_tab');
-            }
-        } catch (error) {
-            console.error('Error fetching settings:', error);
-        }
-    };
-
-    const handleSaveSettings = async () => {
-        try {
-            const res = await fetch('/api/board-settings/EXAM_USER', {
-                method: 'PUT', // Changed from POST to PUT
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    settings: {
-                        gridColumns,
-                        viewMode
-                    }, // Send as object, API will stringify it
-                }),
-            });
-            if (res.ok) {
-                alert('설정이 저장되었습니다.');
-            } else {
-                throw new Error('Failed to save');
-            }
-        } catch (error) {
-            console.error('Error saving settings:', error);
-            alert('설정 저장 중 오류가 발생했습니다.');
-        }
-    };
-
     const handleOpenModal = (material?: ExamMaterial) => {
         if (material) {
             setEditingMaterial(material);
             setTitle(material.title);
-            setExistingFiles(material.attachments);
-            setFiles([]);
+            setExistingFiles(material.attachments || []);
         } else {
             setEditingMaterial(null);
             setTitle('');
             setExistingFiles([]);
-            setFiles([]);
         }
+        setFiles([]);
         setIsModalOpen(true);
+    };
+
+    const handleDeleteFile = async (fileId: number) => {
+        if (!confirm('정말 삭제하시겠습니까?')) return;
+        setExistingFiles(prev => prev.filter(f => f.id !== fileId));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!title.trim()) {
-            alert('제목을 입력해주세요.');
-            return;
-        }
-
-        if (files.length === 0 && existingFiles.length === 0) {
-            alert('파일을 첨부해주세요.');
-            return;
-        }
-
         try {
-            // 1. Upload new files first
-            const uploadedFiles = [...existingFiles];
-
-            for (const file of files) {
+            // 1. Upload new files if any
+            const newAttachments = [];
+            if (files.length > 0) {
                 const formData = new FormData();
-                formData.append('file', file);
+                files.forEach(file => formData.append('file', file));
 
-                const uploadRes = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (!uploadRes.ok) throw new Error('File upload failed');
-
-                const uploadData = await uploadRes.json();
-                uploadedFiles.push({
-                    fileName: uploadData.fileName,
-                    fileUrl: uploadData.fileUrl,
-                    fileSize: uploadData.fileSize,
-                    mimeType: uploadData.mimeType,
-                });
+                // Assuming your upload API handles multiple files or update logic accordingly
+                // Here we use single file upload per request for simplicity if needed, but standard FormData supports multiple.
+                // Checking previous code: usages show single file upload loop or bulk.
+                // Let's stick to simple single upload loop for robustness if bulk not explicit.
+                for (const file of files) {
+                    const uploadData = new FormData();
+                    uploadData.append('file', file);
+                    const res = await fetch('/api/upload', { method: 'POST', body: uploadData });
+                    if (res.ok) {
+                        const data = await res.json();
+                        newAttachments.push({
+                            fileName: data.fileName,
+                            fileUrl: data.fileUrl,
+                            fileSize: data.fileSize,
+                            mimeType: data.mimeType
+                        });
+                    }
+                }
             }
 
-            // 2. Create or Update Post
+            // 2. Prepare payload
+            const payload = {
+                title,
+                attachments: [
+                    ...existingFiles, // Keep existing ones (IDs are enough usually, but API might expect objects)
+                    ...newAttachments
+                ]
+            };
+
             const url = '/api/admin/exam';
             const method = editingMaterial ? 'PUT' : 'POST';
-            const body = {
-                id: editingMaterial?.id,
-                title,
-                attachments: uploadedFiles,
-            };
+            const body = editingMaterial ? { ...payload, id: editingMaterial.id } : payload;
 
             const res = await fetch(url, {
                 method,
@@ -164,151 +122,113 @@ export default function AdminExamPage() {
                 body: JSON.stringify(body),
             });
 
-            if (!res.ok) throw new Error('Failed to save material');
+            if (!res.ok) throw new Error('Failed to save');
 
             setIsModalOpen(false);
             fetchMaterials();
-            alert(editingMaterial ? '수정되었습니다.' : '등록되었습니다.');
         } catch (error) {
-            console.error('Error saving material:', error);
-            alert('저장 중 오류가 발생했습니다.');
+            console.error(error);
+            alert('저장 실패');
         }
     };
 
     const handleDelete = async (id: number) => {
         if (!confirm('정말 삭제하시겠습니까?')) return;
-
         try {
-            const res = await fetch(`/api/admin/exam?id=${id}`, {
-                method: 'DELETE',
-            });
-
-            if (res.ok) {
-                fetchMaterials();
-            } else {
-                alert('삭제 실패');
-            }
+            await fetch(`/api/admin/exam?id=${id}`, { method: 'DELETE' });
+            fetchMaterials();
         } catch (error) {
-            console.error('Error deleting material:', error);
-            alert('삭제 중 오류가 발생했습니다.');
+            console.error(error);
+            alert('삭제 실패');
         }
     };
 
     return (
-        <div className="p-6">
+        <div className="p-6 max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">응시자 자료 관리</h1>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    자료 등록
-                </button>
-            </div>
-
-            {/* Settings Panel */}
-            <div className="bg-white p-4 rounded-lg shadow mb-6 border border-gray-200">
-                <h2 className="text-lg font-semibold mb-4">화면 설정</h2>
-                <div className="flex flex-wrap items-center gap-6">
-                    <div className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-gray-700">그리드 열 개수:</label>
-                        <select
-                            value={gridColumns}
-                            onChange={(e) => setGridColumns(Number(e.target.value))}
-                            className="border border-gray-300 rounded px-3 py-1.5"
-                        >
-                            <option value={2}>2열</option>
-                            <option value={3}>3열</option>
-                            <option value={4}>4열</option>
-                            <option value={5}>5열</option>
-                        </select>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-gray-700">보기 방식:</label>
-                        <select
-                            value={viewMode}
-                            onChange={(e) => setViewMode(e.target.value as 'new_tab' | 'flip_book')}
-                            className="border border-gray-300 rounded px-3 py-1.5"
-                        >
-                            <option value="new_tab">새 창에서 열기 (기본)</option>
-                            <option value="flip_book">책장 넘겨보기 (뷰어)</option>
-                        </select>
-                    </div>
-
+                <div className="flex gap-2">
                     <button
-                        onClick={handleSaveSettings}
-                        className="bg-gray-800 text-white px-3 py-1.5 rounded text-sm hover:bg-gray-700 ml-auto"
+                        onClick={() => setIsSettingsOpen(true)}
+                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
                     >
-                        설정 저장
+                        ⚙️ 게시판 설정
+                    </button>
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                        + 자료 등록
                     </button>
                 </div>
             </div>
 
-            {/* List Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <table className="w-full text-left border-collapse">
+                    <thead className="bg-gray-50 border-b">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">제목</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">첨부파일</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">등록일</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+                            <th className="p-4 w-16 text-center text-gray-500">ID</th>
+                            <th className="p-4 text-gray-500">제목</th>
+                            <th className="p-4 w-32 text-center text-gray-500">첨부파일</th>
+                            <th className="p-4 w-40 text-center text-gray-500">등록일</th>
+                            <th className="p-4 w-32 text-center text-gray-500">관리</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {loading ? (
-                            <tr>
-                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">로딩 중...</td>
-                            </tr>
-                        ) : materials.length === 0 ? (
-                            <tr>
-                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">등록된 자료가 없습니다.</td>
-                            </tr>
-                        ) : (
-                            materials.map((material) => (
-                                <tr key={material.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{material.id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{material.title}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {material.attachments.length > 0 ? (
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                {material.attachments[0].fileName}
-                                            </span>
-                                        ) : '-'}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(material.createdAt).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <tbody className="divide-y divide-gray-100">
+                        {materials.map(item => (
+                            <tr key={item.id} className="hover:bg-gray-50">
+                                <td className="p-4 text-center text-gray-500">{item.id}</td>
+                                <td className="p-4 font-medium">{item.title}</td>
+                                <td className="p-4 text-center">
+                                    {item.attachments?.length > 0 ? (
+                                        <span className="text-sm bg-gray-100 px-2 py-1 rounded text-gray-600">
+                                            {item.attachments.length}개
+                                        </span>
+                                    ) : (
+                                        <span className="text-gray-300">-</span>
+                                    )}
+                                </td>
+                                <td className="p-4 text-center text-gray-500 text-sm">
+                                    {new Date(item.createdAt).toLocaleDateString()}
+                                </td>
+                                <td className="p-4 text-center">
+                                    <div className="flex justify-center gap-2">
                                         <button
-                                            onClick={() => handleOpenModal(material)}
-                                            className="text-indigo-600 hover:text-indigo-900 mr-4"
+                                            onClick={() => handleOpenModal(item)}
+                                            className="text-blue-600 hover:underline text-sm"
                                         >
                                             수정
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(material.id)}
-                                            className="text-red-600 hover:text-red-900"
+                                            onClick={() => handleDelete(item.id)}
+                                            className="text-red-500 hover:underline text-sm"
                                         >
                                             삭제
                                         </button>
-                                    </td>
-                                </tr>
-                            ))
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        {materials.length === 0 && !loading && (
+                            <tr>
+                                <td colSpan={5} className="p-8 text-center text-gray-500">
+                                    등록된 자료가 없습니다.
+                                </td>
+                            </tr>
                         )}
                     </tbody>
                 </table>
             </div>
 
-            {/* Pagination */}
+            {/* Pagination ... (Simplified for brevity if needed, but keeping existing is safer if not fully rewriting) 
+               Actually I'm replacing the whole file so I should keep pagination logic.
+            */}
             {totalPages > 1 && (
-                <div className="mt-4 flex justify-center gap-2">
+                <div className="mt-6 flex justify-center gap-2">
                     <button
                         onClick={() => setPage(p => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="px-3 py-1 border rounded disabled:opacity-50"
+                        className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
                     >
                         이전
                     </button>
@@ -316,78 +236,69 @@ export default function AdminExamPage() {
                     <button
                         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages}
-                        className="px-3 py-1 border rounded disabled:opacity-50"
+                        className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
                     >
                         다음
                     </button>
                 </div>
             )}
 
-            {/* Edit/Create Modal */}
+            {/* Post Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-11/12 md:w-1/3 min-w-[320px]">
-                        <h2 className="text-xl font-bold mb-4">
-                            {editingMaterial ? '자료 수정' : '자료 등록'}
-                        </h2>
-                        <form onSubmit={handleSubmit}>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">제목</label>
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b flex justify-between items-center">
+                            <h3 className="font-bold text-lg">{editingMaterial ? '자료 수정' : '새 자료 등록'}</h3>
+                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+                        </div>
+                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">제목</label>
                                 <input
                                     type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="자료 제목을 입력하세요"
+                                    className="w-full border rounded p-2"
                                     required
+                                    value={title}
+                                    onChange={e => setTitle(e.target.value)}
                                 />
                             </div>
 
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">첨부파일 (PDF, TXT)</label>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">첨부파일 (PDF 권장)</label>
+                                <FileUploader onFilesChange={setFiles} />
+
                                 {existingFiles.length > 0 && (
-                                    <div className="mb-2 p-2 bg-gray-50 rounded flex justify-between items-center">
-                                        <span className="text-sm text-gray-600 truncate">{existingFiles[0].fileName}</span>
-                                        <button
-                                            type="button"
-                                            onClick={() => setExistingFiles([])}
-                                            className="text-red-500 text-sm hover:text-red-700"
-                                        >
-                                            삭제
-                                        </button>
-                                    </div>
+                                    <ul className="mt-3 space-y-2">
+                                        {existingFiles.map((file, idx) => (
+                                            <li key={idx} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
+                                                <a href={file.fileUrl} target="_blank" className="text-blue-600 hover:underline truncate max-w-[300px]">
+                                                    {file.fileName}
+                                                </a>
+                                                <button type="button" onClick={() => handleDeleteFile(file.id || file.fileUrl)} className="text-red-500 hover:text-red-700">
+                                                    삭제
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 )}
-                                {existingFiles.length === 0 && (
-                                    <FileUploader
-                                        onFilesChange={setFiles}
-                                        maxFiles={1}
-                                        maxSizeMB={50}
-                                    />
-                                )}
-                                <p className="text-xs text-gray-500 mt-1">
-                                    * PDF 또는 TXT 파일만 업로드해주세요.
-                                </p>
                             </div>
 
-                            <div className="flex justify-end gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
-                                >
-                                    취소
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                >
-                                    저장
-                                </button>
+                            <div className="pt-4 flex justify-end gap-2 border-t mt-4">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">취소</button>
+                                <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">저장</button>
                             </div>
                         </form>
                     </div>
-                </div>
-            )}
-        </div>
+                </div >
+            )
+            }
+
+            {/* Board Settings Modal */}
+            <BoardSettingsModal
+                isOpen={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
+                boardType={BOARD_TYPES.EXAM_USER}
+            />
+        </div >
     );
 }

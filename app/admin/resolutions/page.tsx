@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import BoardSettingsModal from '@/components/admin/BoardSettingsModal'
+import { BOARD_TYPES } from '@/lib/board-config'
 
 interface Resolution {
     id: number
@@ -34,6 +36,7 @@ export default function ResolutionsAdminPage() {
     const [importFile, setImportFile] = useState<File | null>(null)
     const [importMode, setImportMode] = useState<'merge' | 'overwrite'>('merge')
     const [isImporting, setIsImporting] = useState(false)
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
     useEffect(() => {
         fetchResolutions(activeTab)
@@ -290,6 +293,12 @@ export default function ResolutionsAdminPage() {
                 </div>
                 {!showUploadForm && (
                     <div className="flex gap-2">
+                        <button
+                            onClick={() => setIsSettingsOpen(true)}
+                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold text-sm"
+                        >
+                            ⚙️ 게시판 설정
+                        </button>
                         <button
                             onClick={handleExport}
                             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm"
@@ -614,6 +623,13 @@ export default function ResolutionsAdminPage() {
                     </div>
                 </div>
             )}
+
+            {/* Board Settings Modal */}
+            <BoardSettingsModal
+                isOpen={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
+                boardType={BOARD_TYPES.RESOLUTION}
+            />
         </div >
     )
 }

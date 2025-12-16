@@ -26,6 +26,9 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
     const [totalPages, setTotalPages] = useState(1);
     const [gridColumns, setGridColumns] = useState(4);
     const [viewMode, setViewMode] = useState<'new_tab' | 'flip_book'>('flip_book');
+    const [coverImage, setCoverImage] = useState<string>('');
+    const [titleColor, setTitleColor] = useState<string>('#000000');
+    const [titleSize, setTitleSize] = useState<string>('1.25rem');
     const [search, setSearch] = useState('');
 
     // Viewer State
@@ -33,11 +36,11 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
 
     useEffect(() => {
         fetchSettings();
-    }, []);
+    }, [boardType]);
 
     useEffect(() => {
         fetchPosts();
-    }, [page, search]);
+    }, [page, search, boardType]);
 
     const fetchSettings = async () => {
         try {
@@ -49,6 +52,9 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
                     : data.settings;
                 setGridColumns(settings.gridColumns || 4);
                 setViewMode(settings.viewMode || 'flip_book');
+                setCoverImage(settings.coverImage || '');
+                setTitleColor(settings.titleColor || '#000000');
+                setTitleSize(settings.titleSize || '1.25rem');
             }
         } catch (error) {
             console.error('Error fetching settings:', error);
@@ -83,10 +89,8 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
             const fileUrl = post.attachments[0].fileUrl;
 
             if (viewMode === 'flip_book' && fileUrl.toLowerCase().endsWith('.pdf')) {
-                // Open Flip Viewer for PDF
                 setSelectedFile(fileUrl);
             } else {
-                // Default: Open in new tab (also for non-PDFs)
                 window.open(fileUrl, '_blank');
             }
         } else {
@@ -99,6 +103,10 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
         setPage(1);
         fetchPosts();
     };
+
+    const isExamUser = boardType === 'EXAM_USER';
+
+    console.log('ExamMaterialList State:', { loading, postsLength: posts.length, gridColumns, viewMode });
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -132,69 +140,77 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
                 <div
                     className="grid gap-6"
                     style={{
-                        gridTemplateColumns: `repeat(${gridColumns}, minmax(0, 1fr))`,
+                        gridTemplateColumns: `repeat(${Number(gridColumns) || 4}, minmax(0, 1fr))`,
                     }}
                 >
                     {posts.map((post) => (
                         <div
                             key={post.id}
                             onClick={() => handleCardClick(post)}
-                            className="aspect-[3/4] max-w-[180px] mx-auto rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer flex flex-col items-center text-center group transform hover:-translate-y-1 relative overflow-hidden"
+                            className={`aspect-[3/4] max-w-[180px] min-h-[200px] mx-auto rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer group transform hover:-translate-y-1 relative overflow-hidden bg-gray-200 ${!isExamUser ? 'flex flex-col items-center justify-center text-center p-4' : ''}`}
                             style={{
-                                backgroundImage: 'url(/pdf/노회록/00-겉표지.jpg)',
+                                backgroundImage: `url('${coverImage || '/pdf/노회록/00-겉표지.jpg'}')`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                             }}
                         >
-                            {/* Overlay */}
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
-
-                            {/* Content Wrapper */}
-                            <div className="relative z-10 flex flex-col items-center justify-center h-full w-full p-4">
-                                {/* Title Area - Centered */}
-                                <div className="flex items-center justify-center w-full h-full">
-                                    <h3
-                                        className="text-white drop-shadow-md font-bold text-lg leading-snug line-clamp-3 break-keep"
-                                    >
-                                        {post.title}
-                                    </h3>
-                                </div>
+                            <div
+                                className={`w-full px-4 ${isExamUser ? 'absolute top-[30%] left-0 text-center transform -translate-y-1/2' : ''}`}
+                            >
+                                <h3
+                                    className="font-bold break-keep leading-snug"
+                                    style={{
+                                        color: titleColor,
+                                        fontSize: titleSize,
+                                        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                    }}
+                                >
+                                    {post.title}
+                                </h3>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
+            {/* Overlay */}
+            {/* Removed duplicated overlay code */}
+
+
 
             {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="mt-12 flex justify-center gap-2">
-                    <button
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-                    >
-                        이전
-                    </button>
-                    <span className="px-4 py-2 font-medium text-gray-700">
-                        {page} / {totalPages}
-                    </span>
-                    <button
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
-                        className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-                    >
-                        다음
-                    </button>
-                </div>
-            )}
+            {
+                totalPages > 1 && (
+                    <div className="mt-12 flex justify-center gap-2">
+                        <button
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                        >
+                            이전
+                        </button>
+                        <span className="px-4 py-2 font-medium text-gray-700">
+                            {page} / {totalPages}
+                        </span>
+                        <button
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page === totalPages}
+                            className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                        >
+                            다음
+                        </button>
+                    </div>
+                )
+            }
 
             {/* PDF Flip Viewer Modal */}
-            {selectedFile && (
-                <PDFFlipViewer
-                    fileUrl={selectedFile}
-                    onClose={() => setSelectedFile(null)}
-                />
-            )}
-        </div>
+            {
+                selectedFile && (
+                    <PDFFlipViewer
+                        fileUrl={selectedFile}
+                        onClose={() => setSelectedFile(null)}
+                    />
+                )
+            }
+        </div >
     );
 }

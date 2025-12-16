@@ -1,8 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import PageHeader from '@/app/components/common/PageHeader'
+import { BOARD_TYPES } from '@/lib/board-config'
+
+// Dynamic imports for viewers to avoid SSR issues
+const PDFFlipViewer = dynamic(() => import('@/components/board/PDFFlipViewer'), { ssr: false })
+const ImageFlipViewer = dynamic(() => import('@/components/board/ImageFlipViewer'), { ssr: false })
 
 interface Resolution {
     id: number
@@ -14,14 +19,58 @@ interface Resolution {
     fileUrl: string
 }
 
+interface BoardSettings {
+    gridColumns?: number
+    viewMode?: 'new_tab' | 'flip_book'
+    coverImage?: string
+    titleColor?: string
+    titleSize?: string
+}
+
 export default function ResolutionsPage() {
     const [activeTab, setActiveTab] = useState<'1-20' | '21-40' | '41-60' | '61-80'>('1-20')
     const [resolutions, setResolutions] = useState<Resolution[]>([])
     const [isLoading, setIsLoading] = useState(false)
 
+    // Board Settings State
+    const [settings, setSettings] = useState<BoardSettings>({
+        gridColumns: 4,
+        viewMode: 'flip_book',
+        coverImage: '',
+        titleColor: '#ffffff',
+        titleSize: '1.25rem'
+    })
+
+    // Viewer State
+    const [selectedPDF, setSelectedPDF] = useState<string | null>(null)
+    const [selectedImages, setSelectedImages] = useState<string[] | null>(null)
+    const [selectedTitle, setSelectedTitle] = useState<string>('')
+
+    useEffect(() => {
+        fetchSettings()
+    }, [])
+
     useEffect(() => {
         fetchResolutions(activeTab)
     }, [activeTab])
+
+    const fetchSettings = async () => {
+        try {
+            const res = await fetch(`/api/board-settings/${BOARD_TYPES.RESOLUTION}`)
+            const data = await res.json()
+            if (data.settings) {
+                setSettings({
+                    gridColumns: data.settings.gridColumns || 4,
+                    viewMode: data.settings.viewMode || 'flip_book',
+                    coverImage: data.settings.coverImage || '',
+                    titleColor: data.settings.titleColor || '#000000',
+                    titleSize: data.settings.titleSize || '1.25rem'
+                })
+            }
+        } catch (error) {
+            console.error('Error fetching settings:', error)
+        }
+    }
 
     const fetchResolutions = async (tab: string) => {
         setIsLoading(true)
@@ -38,6 +87,25 @@ export default function ResolutionsPage() {
             setResolutions([])
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const handleCardClick = (resolution: Resolution) => {
+        const fileUrl = resolution.fileUrl
+        const fileType = resolution.fileType
+
+        if (settings.viewMode === 'new_tab') {
+            // Open in new tab
+            window.open(fileUrl, '_blank')
+        } else {
+            // Use flip viewer based on file type
+            setSelectedTitle(resolution.title)
+            if (fileType === 'PDF') {
+                setSelectedPDF(fileUrl)
+            } else if (fileType === 'IMAGE') {
+                // For single image, wrap in array
+                setSelectedImages([fileUrl])
+            }
         }
     }
 
@@ -74,7 +142,7 @@ export default function ResolutionsPage() {
                             </nav>
                         </div>
 
-                        {/* Tab Content */}
+                        {/* Grid Content */}
                         <div className="p-8 min-h-[400px]">
                             {isLoading ? (
                                 <div className="flex justify-center items-center py-12">
@@ -85,36 +153,48 @@ export default function ResolutionsPage() {
                                     등록된 결의서가 없습니다.
                                 </div>
                             ) : (
-                                <div className="space-y-6">
+                                <div
+                                    className="grid gap-6"
+                                    style={{
+                                        gridTemplateColumns: `repeat(${settings.gridColumns || 4}, minmax(0, 1fr))`
+                                    }}
+                                >
                                     {resolutions.map((resolution) => (
-                                        <div key={resolution.id} className="border-b border-gray-200 pb-6 last:border-0">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                                                {resolution.title}
-                                            </h3>
+                                        <div
+                                            key={resolution.id}
+                                            onClick={() => handleCardClick(resolution)}
+                                            className="aspect-[3/4] max-w-[180px] min-h-[200px] mx-auto rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer group transform hover:-translate-y-1 relative overflow-hidden bg-gray-200"
+                                            style={{
+                                                backgroundImage: settings.coverImage
+                                                    ? `url('${settings.coverImage}')`
+                                                    : `url('/pdf/노회록/00-겉표지.jpg')`,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center',
+                                            }}
+                                        >
+                                            {/* File Type Badge */}
+                                            <div className="absolute top-2 right-2">
+                                                <span className={`px-2 py-1 rounded text-xs font-bold ${resolution.fileType === 'PDF'
+                                                    ? 'bg-red-500 text-white'
+                                                    : 'bg-blue-500 text-white'
+                                                    }`}>
+                                                    {resolution.fileType}
+                                                </span>
+                                            </div>
 
-                                            {resolution.fileType === 'IMAGE' ? (
-                                                <div className="relative w-full max-w-2xl">
-                                                    <Image
-                                                        src={resolution.fileUrl}
-                                                        alt={resolution.title}
-                                                        width={800}
-                                                        height={1000}
-                                                        className="w-full h-auto rounded-lg shadow-md"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <a
-                                                    href={resolution.fileUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary-blue text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                            {/* Title - Center Aligned */}
+                                            <div className="absolute inset-0 flex items-center justify-center p-3">
+                                                <h3
+                                                    className="font-bold text-center break-keep leading-snug"
+                                                    style={{
+                                                        color: settings.titleColor || '#ffffff',
+                                                        fontSize: settings.titleSize || '0.875rem',
+                                                        textShadow: '0 2px 4px rgba(0,0,0,0.7)'
+                                                    }}
                                                 >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                    </svg>
-                                                    결의서 보기
-                                                </a>
-                                            )}
+                                                    {resolution.title}
+                                                </h3>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -123,6 +203,24 @@ export default function ResolutionsPage() {
                     </div>
                 </div>
             </section>
+
+            {/* PDF Flip Viewer Modal */}
+            {selectedPDF && (
+                <PDFFlipViewer
+                    fileUrl={selectedPDF}
+                    title={selectedTitle}
+                    onClose={() => { setSelectedPDF(null); setSelectedTitle(''); }}
+                />
+            )}
+
+            {/* Image Flip Viewer Modal */}
+            {selectedImages && (
+                <ImageFlipViewer
+                    images={selectedImages}
+                    title={selectedTitle}
+                    onClose={() => { setSelectedImages(null); setSelectedTitle(''); }}
+                />
+            )}
         </main>
     )
 }

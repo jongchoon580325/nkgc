@@ -5,6 +5,7 @@ import PageHeader from '@/app/components/common/PageHeader';
 import FileUploader from '@/components/board/FileUploader';
 import { BOARD_TYPES } from '@/lib/board-config';
 import NotificationModal from '@/app/components/common/NotificationModal';
+import BoardSettingsModal from '@/components/admin/BoardSettingsModal';
 
 interface MeetingMaterial {
     id: number;
@@ -27,6 +28,7 @@ export default function MeetingMinutesAdminPage() {
     const [files, setFiles] = useState<File[]>([]); // New files to upload
     const [existingFiles, setExistingFiles] = useState<any[]>([]); // Existing files from DB
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     // Notification Modal State
     const [notification, setNotification] = useState<{
@@ -182,15 +184,23 @@ export default function MeetingMinutesAdminPage() {
                         className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                 </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    자료 등록
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setIsSettingsOpen(true)}
+                        className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                        ⚙️ 게시판 설정
+                    </button>
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        자료 등록
+                    </button>
+                </div>
             </div>
 
             {/* List */}
@@ -363,6 +373,13 @@ export default function MeetingMinutesAdminPage() {
                 type={notification.type}
                 onConfirm={notification.onConfirm}
                 isDestructive={notification.isDestructive}
+            />
+
+            {/* Board Settings Modal */}
+            <BoardSettingsModal
+                isOpen={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
+                boardType={BOARD_TYPES.MEETING_MINUTES}
             />
         </div>
     );

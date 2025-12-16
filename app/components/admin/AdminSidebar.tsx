@@ -55,6 +55,7 @@ export default function AdminSidebar() {
                 </svg>
             ),
             submenu: [
+                { name: '노회소개 관리', href: '/admin/introduction' },
                 { name: '임원 관리', href: '/admin/officers' },
                 { name: '콘텐츠 관리', href: '/admin/content' },
             ]
@@ -99,6 +100,7 @@ export default function AdminSidebar() {
             ),
             submenu: [
                 { name: '게시판 설정', href: '/admin/board-settings' },
+                { name: 'Popup 관리', href: '/admin/popup' },
             ]
         },
         {

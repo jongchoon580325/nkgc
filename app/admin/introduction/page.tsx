@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import FileUploader from '@/components/board/FileUploader'
+import Image from 'next/image'
 
 interface Section {
     heading: string
     content?: string
     items?: string[]
+    image?: string
 }
 
 interface IntroductionData {
@@ -58,6 +61,42 @@ export default function AdminIntroductionPage() {
         newSections[index].items = value.split('\n').filter((item) => item.trim())
         setData({ ...data, sections: newSections })
     }
+
+    const handleImageUpload = async (index: number, file: File) => {
+        if (!file) return;
+
+        setSaving(true); // Indicate saving state during upload
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Image upload failed');
+            }
+
+            const result = await response.json();
+            const imageUrl = result.fileUrl;
+
+            handleSectionChange(index, 'image', imageUrl);
+            alert('이미지 업로드 성공!');
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('이미지 업로드 실패!');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleImageRemove = (index: number) => {
+        if (confirm('정말 이미지를 삭제하시겠습니까?')) {
+            handleSectionChange(index, 'image', '');
+        }
+    };
 
     const addSection = () => {
         const newSection: Section = {
@@ -218,19 +257,57 @@ export default function AdminIntroductionPage() {
                                             />
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-600 mb-1">
-                                                내용 텍스트
-                                            </label>
-                                            <textarea
-                                                value={section.content || ''}
-                                                onChange={(e) =>
-                                                    handleSectionChange(index, 'content', e.target.value)
-                                                }
-                                                rows={3}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary-blue"
-                                                placeholder="섹션 설명 (선택사항)"
-                                            />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">
+                                                    내용 텍스트
+                                                </label>
+                                                <textarea
+                                                    value={section.content || ''}
+                                                    onChange={(e) =>
+                                                        handleSectionChange(index, 'content', e.target.value)
+                                                    }
+                                                    rows={5}
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary-blue"
+                                                    placeholder="섹션 설명 (선택사항)"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">
+                                                    이미지 (선택사항)
+                                                </label>
+                                                {section.image ? (
+                                                    <div className="relative border rounded-lg overflow-hidden group">
+                                                        <div className="relative aspect-video w-full bg-gray-100">
+                                                            <Image
+                                                                src={section.image}
+                                                                alt="Section Image"
+                                                                fill
+                                                                className="object-contain"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleImageRemove(index)}
+                                                            className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded-full shadow-md hover:bg-red-700 transition-colors"
+                                                            title="이미지 삭제"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-white">
+                                                        <FileUploader
+                                                            maxFiles={1}
+                                                            maxSizeMB={5}
+                                                            onFilesChange={(files) => handleImageUpload(index, files[0])}
+                                                        />
+                                                        <p className="text-xs text-gray-500 mt-2 text-center">
+                                                            권장: 로고나 관련 이미지
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
 
                                         <div>

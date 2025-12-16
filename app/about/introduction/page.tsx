@@ -3,11 +3,13 @@ import AdminOnly from '../../components/auth/AdminOnly'
 import fs from 'fs/promises'
 import path from 'path'
 import PageHeader from '@/app/components/common/PageHeader'
+import Image from 'next/image'
 
 interface Section {
     heading: string
     content?: string
     items?: string[]
+    image?: string
 }
 
 interface IntroductionData {
@@ -47,31 +49,44 @@ export default async function IntroductionPage() {
                         </div>
 
                         {/* Sections */}
-                        <div className="space-y-8">
+                        <div className="space-y-12">
                             {data.sections.map((section, index) => (
-                                <div key={index} className="space-y-4">
-                                    <h2 className="text-2xl font-bold text-primary-blue mb-4">
-                                        {section.heading}
-                                    </h2>
+                                <div key={index} className={`grid gap-8 ${section.image ? 'lg:grid-cols-3' : ''} items-start`}>
+                                    <div className={`space-y-4 ${section.image ? 'lg:col-span-2' : ''}`}>
+                                        <h2 className="text-2xl font-bold text-primary-blue border-l-4 border-primary-blue pl-4">
+                                            {section.heading}
+                                        </h2>
 
-                                    {section.content && (
-                                        <p className="text-gray-700 leading-relaxed">
-                                            {section.content}
-                                        </p>
-                                    )}
+                                        {section.content && (
+                                            <p className="text-gray-700 leading-relaxed text-lg">
+                                                {section.content}
+                                            </p>
+                                        )}
 
-                                    {section.items && (
-                                        <ul className="space-y-3">
-                                            {section.items.map((item, itemIndex) => (
-                                                <li
-                                                    key={itemIndex}
-                                                    className="flex items-center text-gray-700"
-                                                >
-                                                    <span className="w-2 h-2 bg-accent-600 rounded-full mr-3"></span>
-                                                    <span className="text-lg">{item}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                        {section.items && (
+                                            <ul className="space-y-3 mt-4">
+                                                {section.items.map((item, itemIndex) => (
+                                                    <li
+                                                        key={itemIndex}
+                                                        className="flex items-center text-gray-700"
+                                                    >
+                                                        <span className="w-2 h-2 bg-accent-600 rounded-full mr-3 shrink-0"></span>
+                                                        <span className="text-lg">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+
+                                    {section.image && (
+                                        <div className="relative aspect-square md:aspect-[4/3] lg:aspect-square w-full bg-gray-50 rounded-2xl overflow-hidden shadow-md order-first lg:order-last">
+                                            <Image
+                                                src={section.image}
+                                                alt={section.heading}
+                                                fill
+                                                className="object-contain p-4"
+                                            />
+                                        </div>
                                     )}
                                 </div>
                             ))}

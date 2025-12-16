@@ -1,22 +1,37 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import dynamic from 'next/dynamic'
 import { marked } from 'marked'
-import 'react-quill-new/dist/quill.snow.css'
-
-// Dynamic import for ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill-new'), {
-    ssr: false,
-    loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-lg"></div>,
-})
+import Image from 'next/image'
+import TiptapEditor from '@/components/board/TiptapEditor'
+import MediaPickerModal from '@/components/media/MediaPickerModal'
+import NotificationModal from '@/app/components/common/NotificationModal'
+import { getFileIcon, isImage } from '@/lib/utils/media'
 
 export default function RulesAdminPage() {
     const [activeTab, setActiveTab] = useState<'PRESBYTERY' | 'COURTESY'>('PRESBYTERY')
     const [content, setContent] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
-    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+    const [message, setMessage] = useState<{ type: 'success' | 'error' | 'warning' | 'info', text: string } | null>(null)
+
+    // Attachments State
+    const [attachedAssets, setAttachedAssets] = useState<any[]>([])
+    const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false)
+
+    // Modal State
+    const [modal, setModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        type: 'success' | 'error' | 'warning' | 'info';
+        onConfirm?: () => void;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        type: 'info'
+    })
 
     useEffect(() => {
         fetchRule(activeTab)
@@ -32,6 +47,8 @@ export default function RulesAdminPage() {
             } else {
                 setContent('')
             }
+            // Reset attachments on load since we don't store them separately
+            setAttachedAssets([])
         } catch (error) {
             console.error('Failed to fetch rule:', error)
             showMessage('error', '데이터를 불러오는데 실패했습니다.')
@@ -73,7 +90,33 @@ export default function RulesAdminPage() {
         e.target.value = ''
     }
 
+    const handleMediaSelect = (selectedAssets: any[]) => {
+        // Filter out duplicates based on ID
+        const newAssets = selectedAssets.filter(
+            newItem => !attachedAssets.some(existing => existing.id === newItem.id)
+        )
+        setAttachedAssets(prev => [...prev, ...newAssets])
+
+        // Auto-insert images into editor content
+        let contentToAdd = ''
+        newAssets.forEach(asset => {
+            if (isImage(asset.mimeType)) {
+                contentToAdd += `<img src="${asset.path}" alt="${asset.altText || asset.filename}" />`
+            }
+        })
+
+        if (contentToAdd) {
+            // Append to existing content (add a newline if needed)
+            setContent(prev => prev + (prev ? '<p></p>' : '') + contentToAdd)
+        }
+    }
+
+    const removeAttachment = (id: string) => {
+        setAttachedAssets(prev => prev.filter(a => a.id !== id))
+    }
+
     const handleSave = async () => {
+        // Validation check
         if (!content || content.trim() === '' || content === '<p><br></p>') {
             showMessage('error', '내용을 입력해주세요.')
             return
@@ -93,7 +136,14 @@ export default function RulesAdminPage() {
             const result = await response.json()
 
             if (result.success) {
-                showMessage('success', '저장되었습니다.')
+                // Show Success Modal
+                setModal({
+                    isOpen: true,
+                    title: '저장 완료',
+                    message: '규칙 내용이 성공적으로 저장되었습니다.',
+                    type: 'success',
+                    onConfirm: () => setModal(prev => ({ ...prev, isOpen: false }))
+                })
             } else {
                 console.error('Save failed:', result)
                 showMessage('error', result.error || '저장에 실패했습니다.')
@@ -106,25 +156,20 @@ export default function RulesAdminPage() {
         }
     }
 
-    const showMessage = (type: 'success' | 'error', text: string) => {
-        setMessage({ type, text })
+    const handleCancel = () => {
+        if (confirm('작성 중인 내용을 취소하고 원본 텍스트로 되돌아가겠습니까?')) {
+            fetchRule(activeTab)
+        }
+    }
+
+    const showMessage = (type: 'success' | 'error' | 'warning' | 'info', text: string) => {
+        setMessage({ type: type as any, text }) // Use any cast temporarily if needed, or update message state type properly
         setTimeout(() => setMessage(null), 3000)
     }
 
-    const modules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'align': [] }],
-            ['clean']
-        ],
-    }
-
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-6 h-[calc(100vh-100px)] flex flex-col">
+            <div className="flex items-center justify-between flex-shrink-0">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">규칙 관리</h1>
                     <p className="mt-1 text-sm text-gray-600">노회 규칙 및 예우 규칙을 관리합니다.</p>
@@ -143,25 +188,17 @@ export default function RulesAdminPage() {
                             className="hidden"
                         />
                     </label>
-                    {/* Save Button */}
-                    <button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="px-6 py-2 bg-primary-blue text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-md disabled:opacity-50"
-                    >
-                        {isSaving ? '저장 중...' : '저장하기'}
-                    </button>
                 </div>
             </div>
 
             {message && (
-                <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                <div className={`p-4 rounded-lg flex-shrink-0 ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                     {message.text}
                 </div>
             )}
 
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="border-b border-gray-200">
+            <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col flex-1 min-h-0">
+                <div className="border-b border-gray-200 flex-shrink-0">
                     <nav className="flex -mb-px">
                         <button
                             onClick={() => setActiveTab('PRESBYTERY')}
@@ -184,24 +221,123 @@ export default function RulesAdminPage() {
                     </nav>
                 </div>
 
-                <div className="p-6">
+                <div className="p-6 space-y-4 flex flex-col flex-1 min-h-0 overflow-y-auto">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-64">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-blue"></div>
                         </div>
                     ) : (
-                        <div className="h-[600px]">
-                            <ReactQuill
-                                theme="snow"
+                        <>
+                            <TiptapEditor
                                 value={content}
                                 onChange={setContent}
-                                modules={modules}
-                                className="h-[550px]"
+                                placeholder="규칙 내용을 입력하세요..."
                             />
-                        </div>
+
+                            {/* 첨부파일 섹션 */}
+                            <div className="space-y-4 pt-6 border-t border-gray-100 flex-shrink-0">
+                                <div className="flex items-center justify-between">
+                                    <label className="block text-sm font-medium text-gray-700">첨부파일</label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsMediaPickerOpen(true)}
+                                        className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-sm font-medium flex items-center gap-2 transition-colors"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        파일 추가 (미디어 라이브러리)
+                                    </button>
+                                </div>
+
+                                {/* Attachments List */}
+                                {attachedAssets.length > 0 && (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                        {attachedAssets.map((asset) => (
+                                            <div key={asset.id} className="relative group border rounded-lg bg-gray-50 p-2 flex flex-col gap-2">
+                                                {/* Preview */}
+                                                <div className="aspect-video relative rounded bg-gray-200 overflow-hidden flex items-center justify-center">
+                                                    {isImage(asset.mimeType) ? (
+                                                        <Image
+                                                            src={asset.path}
+                                                            alt={asset.filename}
+                                                            fill
+                                                            className="object-cover"
+                                                            sizes="200px"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-3xl">{getFileIcon(asset.mimeType)}</span>
+                                                    )}
+                                                </div>
+
+                                                {/* Info */}
+                                                <div className="text-xs text-gray-600 truncate px-1">
+                                                    {asset.filename}
+                                                </div>
+
+                                                {/* Delete Button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeAttachment(asset.id)}
+                                                    className="absolute top-1 right-1 bg-white text-red-500 rounded-full p-1 shadow hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    title="삭제"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {attachedAssets.length === 0 && (
+                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center text-gray-500 bg-gray-50/50">
+                                        <p className="text-sm">첨부된 파일이 없습니다.</p>
+                                        <p className="text-xs text-gray-400 mt-1">'파일 추가' 버튼을 눌러 이미지를 선택하세요.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* 하단 버튼 */}
+                            <div className="flex gap-2 justify-end pt-4 border-t border-gray-200 flex-shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={handleCancel}
+                                    className="px-6 py-2.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-medium transition-colors"
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    onClick={handleSave}
+                                    disabled={isSaving}
+                                    className="px-6 py-2.5 bg-primary-blue text-white rounded-lg hover:bg-blue-700 font-medium transition-colors shadow-sm disabled:opacity-50 min-w-[100px]"
+                                >
+                                    {isSaving ? '저장 중...' : '작성하기'}
+                                </button>
+                            </div>
+                        </>
                     )}
                 </div>
             </div>
+
+            {/* Media Picker Modal */}
+            <MediaPickerModal
+                isOpen={isMediaPickerOpen}
+                onClose={() => setIsMediaPickerOpen(false)}
+                onSelect={handleMediaSelect}
+                selectionMode="multiple"
+            />
+
+            {/* Success/Notification Modal */}
+            <NotificationModal
+                isOpen={modal.isOpen}
+                onClose={() => setModal(prev => ({ ...prev, isOpen: false }))}
+                title={modal.title}
+                message={modal.message}
+                type={modal.type}
+                onConfirm={modal.onConfirm}
+            />
         </div>
     )
 }

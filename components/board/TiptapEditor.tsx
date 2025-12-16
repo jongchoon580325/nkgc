@@ -13,7 +13,7 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 
 import { Video } from './extensions/Video';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import TurndownService from 'turndown';
 import { marked } from 'marked';
 import MediaPickerModal from '@/components/media/MediaPickerModal';
@@ -32,6 +32,8 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
     const [viewMode, setViewMode] = useState<ViewMode>('rich');
     const [localValue, setLocalValue] = useState(value);
     const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
+    // Force re-render for active state updates
+    const [, setTick] = useState(0);
 
     const editor = useEditor({
         extensions: [
@@ -67,6 +69,14 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
             const html = editor.getHTML();
             onChange(html);
             setLocalValue(html);
+        },
+        onSelectionUpdate: () => {
+            // Force re-render to update toolbar active states
+            setTick(prev => prev + 1);
+        },
+        onTransaction: () => {
+            // Force re-render to update toolbar active states and undo/redo checks
+            setTick(prev => prev + 1);
         },
         immediatelyRender: false,
     });
@@ -198,11 +208,11 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
         const Divider = () => <div className="w-px h-6 bg-gray-300 mx-1" />;
 
         return (
-            <div className="border border-gray-300 rounded-t-lg bg-white p-2 flex flex-wrap gap-1 items-center sticky top-0 z-10">
+            <div className="border-b border-gray-300 bg-white p-2 flex flex-wrap gap-1 items-center sticky top-0 z-10 shadow-sm">
                 {/* History */}
                 <div className="flex gap-0.5">
-                    <Button onClick={() => editor.chain().focus().undo().run()} title="실행 취소">↩</Button>
-                    <Button onClick={() => editor.chain().focus().redo().run()} title="다시 실행">↪</Button>
+                    <Button onClick={() => editor.chain().focus().undo().run()} title="실행 취소" disabled={!editor.can().undo()}>↩</Button>
+                    <Button onClick={() => editor.chain().focus().redo().run()} title="다시 실행" disabled={!editor.can().redo()}>↪</Button>
                 </div>
 
                 <Divider />
@@ -322,63 +332,67 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
     };
 
     return (
-        <div className={`tiptap-editor-wrapper ${className}`}>
+        <div className={`tiptap-editor-wrapper flex flex-col bg-white border border-gray-300 rounded-lg shadow-sm ${className}`}>
             {/* Mode Toggle */}
-            <div className="flex gap-2 mb-2 justify-between items-center">
+            <div className="flex gap-2 p-2 border-b border-gray-200 justify-between items-center bg-gray-50 rounded-t-lg">
                 <div className="flex gap-2">
                     <button
                         type="button"
                         onClick={() => toggleViewMode('rich')}
-                        className={`px-3 py-1 rounded text-sm ${viewMode === 'rich' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                        className={`px-3 py-1 rounded text-sm transition-colors ${viewMode === 'rich' ? 'bg-blue-600 text-white shadow' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}`}
                     >
                         에디터
                     </button>
                     <button
                         type="button"
                         onClick={() => toggleViewMode('html')}
-                        className={`px-3 py-1 rounded text-sm ${viewMode === 'html' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                        className={`px-3 py-1 rounded text-sm transition-colors ${viewMode === 'html' ? 'bg-blue-600 text-white shadow' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}`}
                     >
                         HTML
                     </button>
                     <button
                         type="button"
                         onClick={() => toggleViewMode('markdown')}
-                        className={`px-3 py-1 rounded text-sm ${viewMode === 'markdown' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                        className={`px-3 py-1 rounded text-sm transition-colors ${viewMode === 'markdown' ? 'bg-blue-600 text-white shadow' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}`}
                     >
                         Markdown
                     </button>
                 </div>
             </div>
 
-            {viewMode === 'rich' && (
-                <div className="border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                    <MenuBar />
-                    <EditorContent editor={editor} className="tiptap-content min-h-[400px] bg-white" />
-                </div>
-            )}
+            {/* Editor Area */}
+            <div className="flex flex-col relative min-h-[500px]">
+                {viewMode === 'rich' && (
+                    <>
+                        <MenuBar />
+                        <div className="bg-gray-50 p-4">
+                            <EditorContent editor={editor} className="tiptap-content min-h-[500px] bg-white rounded shadow-sm p-8 mx-auto max-w-screen-lg" />
+                        </div>
+                    </>
+                )}
 
-            {viewMode === 'html' && (
-                <textarea
-                    value={localValue}
-                    onChange={handleTextareaChange}
-                    className="w-full h-[500px] p-4 font-mono text-sm border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="HTML 코드를 입력하세요..."
-                />
-            )}
+                {viewMode === 'html' && (
+                    <textarea
+                        value={localValue}
+                        onChange={handleTextareaChange}
+                        className="flex-1 w-full p-4 font-mono text-sm resize-none focus:outline-none bg-gray-50"
+                        placeholder="HTML 코드를 입력하세요..."
+                    />
+                )}
 
-            {viewMode === 'markdown' && (
-                <textarea
-                    value={localValue}
-                    onChange={handleTextareaChange}
-                    className="w-full h-[500px] p-4 font-mono text-sm border border-gray-300 rounded bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Markdown을 입력하세요..."
-                />
-            )}
+                {viewMode === 'markdown' && (
+                    <textarea
+                        value={localValue}
+                        onChange={handleTextareaChange}
+                        className="flex-1 w-full p-4 font-mono text-sm resize-none focus:outline-none bg-gray-50"
+                        placeholder="Markdown을 입력하세요..."
+                    />
+                )}
+            </div>
 
             <style jsx global>{`
                 .tiptap-content .ProseMirror {
                     min-height: 400px;
-                    padding: 1.5rem;
                     outline: none;
                 }
                 .tiptap-content .ProseMirror:focus {

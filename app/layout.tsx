@@ -4,6 +4,7 @@ import './globals.css'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import ScrollToTop from './components/common/ScrollToTop'
+import PopupOverlay from './components/common/PopupOverlay'
 
 const notoSansKr = Noto_Sans_KR({
     subsets: ['latin'],
@@ -48,6 +49,7 @@ export default function RootLayout({
         <html lang="ko" className={notoSansKr.variable} suppressHydrationWarning>
             <body className="antialiased" suppressHydrationWarning>
                 <AuthProvider>
+                    <PopupOverlay />
                     <Header />
                     {children}
                     <Footer />
