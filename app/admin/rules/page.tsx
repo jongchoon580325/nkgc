@@ -40,7 +40,13 @@ export default function RulesAdminPage() {
     const fetchRule = async (type: string) => {
         setIsLoading(true)
         try {
-            const response = await fetch(`/api/admin/rules?type=${type}`)
+            const response = await fetch(`/api/admin/rules?type=${type}`, {
+                cache: 'no-store',
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Cache-Control': 'no-cache'
+                }
+            })
             const result = await response.json()
             if (result.success && result.data) {
                 setContent(result.data.content)

@@ -13,6 +13,7 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 
 import { Video } from './extensions/Video';
+import { Div } from './extensions/Div';
 import { useState, useEffect, useCallback } from 'react';
 import TurndownService from 'turndown';
 import { marked } from 'marked';
@@ -62,6 +63,7 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
                 types: ['heading', 'paragraph'],
             }),
             Video,
+            Div,
         ],
         content: value,
         editable: !readOnly,
@@ -89,7 +91,9 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
     }, [value, editor]);
 
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setLocalValue(e.target.value);
+        const newValue = e.target.value;
+        setLocalValue(newValue);
+        onChange(newValue);
     };
 
     const handleYouTubeInsert = () => {
