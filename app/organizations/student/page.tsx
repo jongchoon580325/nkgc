@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import AdminOnly from '../../components/auth/AdminOnly'
+import AdminOnly from '@/components/auth/AdminOnly'
 import { promises as fs } from 'fs'
 import path from 'path'
-import PageHeader from '@/app/components/common/PageHeader'
+import PageHeader from '@/components/common/PageHeader'
 
 interface Officer {
     position: string

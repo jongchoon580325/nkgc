@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import HeroForm from '@/app/components/admin/HeroForm';
+import HeroForm from '@/components/admin/HeroForm';
 
 interface HeroFormData {
     name: string;

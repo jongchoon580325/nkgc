@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import StatCard from '../components/admin/StatCard';
+import StatCard from '@/components/admin/StatCard';
 import Link from 'next/link';
 
 interface DashboardStats {

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 import FileUploader from '@/components/board/FileUploader';
 import { BOARD_TYPES } from '@/lib/board-config';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import NotificationModal from '@/components/common/NotificationModal';
 import BoardSettingsModal from '@/components/admin/BoardSettingsModal';
 
 interface MeetingMaterial {
@@ -171,7 +171,7 @@ export default function MeetingMinutesAdminPage() {
 
     return (
         <div className="flex flex-col gap-6">
-            <PageHeader title="노회록 관리" description="노회록 자료를 등록하고 관리합니다." />
+            <PageHeader title="노회록 관리" subtitle="노회록 자료를 등록하고 관리합니다." />
 
             {/* Actions */}
             <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">

@@ -1,6 +1,6 @@
 'use client';
 
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 import MediaManager from '@/components/media/MediaManager';
 
 export default function MediaAdminPage() {
@@ -8,8 +8,7 @@ export default function MediaAdminPage() {
         <div className="min-h-screen bg-gray-50 pb-20">
             <PageHeader
                 title="통합 미디어 라이브러리"
-                description="이미지, 파일 등 모든 디지털 자산을 중앙에서 관리합니다."
-                registerCount={null}
+                subtitle="이미지, 파일 등 모든 디지털 자산을 중앙에서 관리합니다."
             />
 
             <main className="container mx-auto px-4 -mt-8">

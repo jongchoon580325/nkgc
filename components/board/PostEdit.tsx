@@ -3,19 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import dynamic from 'next/dynamic';
 import { BoardType, BOARD_CONFIG } from '@/lib/board-config';
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 // import FileUploader from './FileUploader';
 import TiptapEditor from './TiptapEditor';
 import MediaPickerModal from '@/components/media/MediaPickerModal';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import NotificationModal from '@/components/common/NotificationModal';
 import Image from 'next/image';
 import { getFileIcon, isImage } from '@/lib/utils/media';
 
-// ReactQuill dynamic import for SSR prevention
-const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
-import 'react-quill-new/dist/quill.snow.css';
 
 interface PostEditProps {
     boardType: BoardType;
@@ -90,17 +86,29 @@ export default function PostEdit({ boardType, postId }: PostEditProps) {
         });
     };
 
+    // Categories state
+    const [categories, setCategories] = useState<string[]>([]);
+
     useEffect(() => {
         if (status === 'unauthenticated') {
-            // alert('로그인이 필요합니다.'); -> Handled by effect or simple redirect, but for consistency we might just redirect.
-            // Since we can't show modal and block execution like alert, we just redirect.
             router.push('/login');
             return;
         }
         if (status === 'authenticated') {
+            fetchCategories();
             fetchPost();
         }
     }, [status, postId]);
+
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch(`/api/board-settings/${boardType}`);
+            const data = await res.json();
+            setCategories(data.categories || []);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
 
     const fetchPost = async () => {
         try {
@@ -237,7 +245,7 @@ export default function PostEdit({ boardType, postId }: PostEditProps) {
     }
 
     const isAdmin = session?.user?.role === 'admin' || session?.user?.role === 'ADMIN';
-    const categories = config.categories || [];
+    // const categories = config.categories || []; // Replaced by dynamic state
 
     return (
         <main className="min-h-screen bg-gray-50">

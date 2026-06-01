@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 
 export default function NoticesPage() {
     const [activeTab, setActiveTab] = useState<'department' | 'applicant'>('department')

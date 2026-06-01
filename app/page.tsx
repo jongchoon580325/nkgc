@@ -1,9 +1,9 @@
-import NoticeBar from './components/sections/NoticeBar'
-import HeroSection from './components/sections/HeroSection'
-import QuickActions from './components/sections/QuickActions'
-import NoticeNews from './components/sections/NoticeNews'
-import Gallery from './components/sections/Gallery'
-import AffiliateLinks from './components/sections/AffiliateLinks'
+import NoticeBar from '@/components/sections/NoticeBar'
+import HeroSection from '@/components/sections/HeroSection'
+import QuickActions from '@/components/sections/QuickActions'
+import NoticeNews from '@/components/sections/NoticeNews'
+import Gallery from '@/components/sections/Gallery'
+import AffiliateLinks from '@/components/sections/AffiliateLinks'
 import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic';

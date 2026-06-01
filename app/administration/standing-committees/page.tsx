@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import PageHeader from '@/app/components/common/PageHeader'
+import PageHeader from '@/components/common/PageHeader'
 
 interface StandingCommittee {
     id: number

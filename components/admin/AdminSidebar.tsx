@@ -72,6 +72,7 @@ export default function AdminSidebar() {
                 { name: '가입승인 관리', href: '/admin/approval' },
                 { name: '상비부관리', href: '/admin/standing-committees' },
                 { name: '상회비관리', href: '/admin/fees-status' },
+                { name: '상회비납부', href: '/admin/fee-payment' },
                 { name: '별명부관리', href: '/admin/separate-registry' },
             ]
         },

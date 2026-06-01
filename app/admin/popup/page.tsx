@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import PageHeader from '@/app/components/common/PageHeader';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import PageHeader from '@/components/common/PageHeader';
+import NotificationModal from '@/components/common/NotificationModal';
 import FileUploader from '@/components/board/FileUploader';
 import Image from 'next/image';
 
@@ -91,8 +91,8 @@ export default function PopupManagementPage() {
                 isActive: popup.isActive,
                 width: popup.width || 400,
                 height: popup.height || 500,
-                positionX: popup.positionX ?? '',
-                positionY: popup.positionY ?? '',
+                positionX: popup.positionX?.toString() ?? '',
+                positionY: popup.positionY?.toString() ?? '',
             });
         } else {
             setEditingId(null);
@@ -184,7 +184,7 @@ export default function PopupManagementPage() {
 
     return (
         <div className="flex flex-col gap-6 max-w-6xl mx-auto pb-20">
-            <PageHeader title="팝업 관리" description="홈페이지에 노출될 팝업 공지를 관리합니다." />
+            <PageHeader title="팝업 관리" subtitle="홈페이지에 노출될 팝업 공지를 관리합니다." />
 
             <div className="flex justify-end">
                 <button

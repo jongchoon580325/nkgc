@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link';
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -239,19 +240,19 @@ export default function AdminContactInfoPage() {
                             >
                                 {saving ? '저장 중...' : '✅ 저장하기'}
                             </button>
-                            <a
+                            <Link
                                 href="/"
                                 className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors text-center"
                             >
                                 취소
-                            </a>
+                            </Link>
                         </div>
                     </form>
                 </div>
 
                 {/* Back Button */}
                 <div className="mt-8 text-center">
-                    <a
+                    <Link
                         href="/"
                         className="inline-flex items-center text-primary-blue hover:text-brand-700 font-medium transition-colors"
                     >
@@ -267,7 +268,7 @@ export default function AdminContactInfoPage() {
                             <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                         홈으로 돌아가기
-                    </a>
+                    </Link>
                 </div>
             </div>
         </main>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import Papa from 'papaparse';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
@@ -365,7 +365,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log(`Importing ${parsed.data.length} records for ${target}`);
 
         // Process based on target type
         switch (target) {
@@ -433,7 +432,6 @@ async function importStandingCommittees(data: any[]) {
     await prisma.standingCommittee.createMany({
         data: records
     });
-    console.log(`Imported ${records.length} standing committees`);
 }
 
 async function importFeesStatus(data: any[]) {
@@ -462,7 +460,6 @@ async function importFeesStatus(data: any[]) {
         data: records
     });
 
-    console.log(`Imported ${records.length} fee statuses`);
 }
 
 async function importMembers(data: any[]) {
@@ -513,7 +510,6 @@ async function importMembers(data: any[]) {
     await prisma.user.createMany({
         data: records
     });
-    console.log(`Imported ${records.length} members`);
 }
 
 async function importCurrentOfficers(data: any[]) {
@@ -541,7 +537,6 @@ async function importCurrentOfficers(data: any[]) {
     };
 
     await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
-    console.log(`Imported ${officers.length} current officers`);
 }
 
 async function importPastOfficers(data: any[]) {
@@ -566,7 +561,6 @@ async function importPastOfficers(data: any[]) {
 
     const filePath = path.join(process.cwd(), 'data', 'past-officers.json');
     await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
-    console.log(`Imported ${years.length} past officers years`);
 }
 
 async function importInspections(data: any[]) {
@@ -611,7 +605,6 @@ async function importInspections(data: any[]) {
     const newData = Array.from(inspectionsMap.values());
     const filePath = path.join(process.cwd(), 'data', 'inspections.json');
     await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
-    console.log(`Imported ${newData.length} inspections`);
 }
 
 async function importOrganizations(data: any[]) {
@@ -666,5 +659,4 @@ async function importOrganizations(data: any[]) {
 
     const filePath = path.join(process.cwd(), 'data', 'organizations.json');
     await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
-    console.log(`Imported ${newData.organizations.length} organizations`);
 }

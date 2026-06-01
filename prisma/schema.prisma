@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -267,6 +268,22 @@ model HeroConfig {
   
   @@index([isActive])
   @@map("hero_configs")
+}
+
+// --- 상회비 납부 계좌 관리 ---
+
+model FeePaymentAccount {
+  id            Int      @id @default(autoincrement())
+  title         String                    // 계좌 명칭 (예: 노회 상회비)
+  bank          String                    // 은행명
+  accountNumber String   @map("account_number") // 계좌번호
+  accountHolder String   @map("account_holder")  // 예금주
+  displayOrder  Int      @default(0) @map("display_order")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("fee_payment_accounts")
 }
 
 // --- IMMS (통합 미디어 관리 시스템) ---

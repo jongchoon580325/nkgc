@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function PrivacyPolicyPage() {
     const [showAll, setShowAll] = useState(false)
@@ -235,7 +236,7 @@ export default function PrivacyPolicyPage() {
 
                 {/* Back Button */}
                 <div className="mt-12 text-center">
-                    <a
+                    <Link
                         href="/"
                         className="inline-flex items-center text-primary-blue hover:text-brand-700 font-medium transition-colors"
                     >
@@ -251,7 +252,7 @@ export default function PrivacyPolicyPage() {
                             <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                         홈으로 돌아가기
-                    </a>
+                    </Link>
                 </div>
             </div>
         </main>

@@ -1,3 +1,5 @@
+'use client';
+import Link from 'next/link';
 import Image from 'next/image'
 
 export default function EmailPolicyPage() {
@@ -120,13 +122,13 @@ export default function EmailPolicyPage() {
 
                 {/* Related Links */}
                 <div className="flex justify-center gap-4">
-                    <a
+                    <Link
                         href="/privacy"
                         className="px-6 py-3 bg-white text-primary-blue border-2 border-primary-blue rounded-lg font-semibold hover:bg-primary-blue hover:text-white transition-all duration-300 shadow-md"
                     >
                         개인정보보호규칙 보기
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                         href="/"
                         className="inline-flex items-center px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all duration-300"
                     >
@@ -142,7 +144,7 @@ export default function EmailPolicyPage() {
                             <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                         홈으로
-                    </a>
+                    </Link>
                 </div>
             </div>
         </main>

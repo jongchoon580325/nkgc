@@ -2,7 +2,8 @@
 
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
+import { LocalStorageProvider } from '@/lib/services/storage/LocalStorageProvider';
 
 function isAuthorized(session: any) {
     return session?.user && ['admin', 'super_admin'].includes(session.user.role);
@@ -44,7 +45,7 @@ export async function getFolderContents(folderId: string | null = null) {
     });
 
     // Breadcrumbs Generator
-    let breadcrumbs = [];
+    const breadcrumbs = [];
     let currentId = folderId;
     while (currentId) {
         const f = await prisma.mediaFolder.findUnique({ where: { id: currentId } });
@@ -93,8 +94,8 @@ export async function deleteFolders(folderIds: string[]) {
         const allFolders = await prisma.mediaFolder.findMany({ select: { id: true, parentId: true } });
 
         const getDescendantIds = (rootIds: string[]) => {
-            let descendants = new Set<string>(rootIds);
-            let queue = [...rootIds];
+            const descendants = new Set<string>(rootIds);
+            const queue = [...rootIds];
             while (queue.length > 0) {
                 const currentId = queue.shift()!;
                 const children = allFolders.filter(f => f.parentId === currentId).map(f => f.id);
@@ -117,7 +118,6 @@ export async function deleteFolders(folderIds: string[]) {
         });
 
         // 3. Delete physical files
-        const { LocalStorageProvider } = require('@/lib/services/storage/LocalStorageProvider');
         const storage = new LocalStorageProvider();
         await Promise.allSettled(assetsToDelete.map((a: any) => storage.delete(a.path)));
 

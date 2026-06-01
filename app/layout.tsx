@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import { Noto_Sans_KR } from 'next/font/google'
 import './globals.css'
-import Header from './components/layout/Header'
-import Footer from './components/layout/Footer'
-import ScrollToTop from './components/common/ScrollToTop'
-import PopupOverlay from './components/common/PopupOverlay'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
+import ScrollToTop from '@/components/common/ScrollToTop'
+import PopupOverlay from '@/components/common/PopupOverlay'
 
 const notoSansKr = Noto_Sans_KR({
     subsets: ['latin'],
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     },
 }
 
-import { AuthProvider } from './components/auth/AuthProvider'
+import { AuthProvider } from '@/components/auth/AuthProvider'
 
 export default function RootLayout({
     children,

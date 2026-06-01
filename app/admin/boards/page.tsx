@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 import { BOARD_CONFIG, BOARD_TYPES } from '@/lib/board-config';
 
 export default function AdminBoardsPage() {

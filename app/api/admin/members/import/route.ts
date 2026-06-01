@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 
@@ -38,14 +38,14 @@ export async function POST(request: NextRequest) {
             });
 
             if (existingUser) {
-                console.log(`Skipped duplicate username: ${username}`);
                 skipped++;
                 continue;
             }
 
             try {
-                // Hash the password
-                const hashedPassword = await bcrypt.hash(password || '123456', 10);
+                // CSV에 비밀번호 없으면 랜덤 12자 임시 비밀번호 생성
+                const tempPassword = password || Math.random().toString(36).slice(-12);
+                const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
                 await prisma.user.create({
                     data: {

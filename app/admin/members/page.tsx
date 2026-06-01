@@ -396,7 +396,7 @@ export default function MembersManagementPage() {
                             phone: row[4] || '010-0000-0000', // 연락처
                             role: getRoleValue(row[5], row[2]), // 회원권한
                             username: row[6] || `${row[0]}_4214`, // 아이디 (빈 값이면 이름_4214)
-                            password: row[7] || '123456'      // 비밀번호 (빈 값이면 123456)
+                            password: row[7] || null           // 비밀번호 없으면 서버에서 랜덤 생성
                         }))
                     })
                 })
@@ -500,7 +500,7 @@ export default function MembersManagementPage() {
                             phone: row[4] || '010-0000-0000',
                             role: getRoleValue(row[5], row[2]),
                             username: row[6] || `${row[0]}_4214`,
-                            password: row[7] || '123456'
+                            password: row[7] || null           // 비밀번호 없으면 서버에서 랜덤 생성
                         }))
                     })
                 })
@@ -802,7 +802,7 @@ export default function MembersManagementPage() {
                                         const totalPages = Math.ceil(filteredMembers.length / itemsPerPage)
                                         const pages = []
                                         let start = Math.max(1, currentPage - 2)
-                                        let end = Math.min(totalPages, start + 4)
+                                        const end = Math.min(totalPages, start + 4)
                                         if (end - start < 4) start = Math.max(1, end - 4)
 
                                         for (let i = start; i <= end; i++) {

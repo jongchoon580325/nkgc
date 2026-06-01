@@ -8,19 +8,30 @@ interface AccountModalProps {
     onClose: () => void
 }
 
+interface Account {
+    id: number
+    title: string
+    bank: string
+    accountNumber: string
+    accountHolder: string
+}
+
 export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
     const [copiedAccount, setCopiedAccount] = useState<string | null>(null)
     const [mounted, setMounted] = useState(false)
     const [contactInfo, setContactInfo] = useState<{ secretary: { phone: string } } | null>(null)
+    const [accounts, setAccounts] = useState<Account[]>([])
 
     useEffect(() => {
         setMounted(true)
-        // Fetch contact info
         fetch('/api/contact-info')
             .then(res => res.json())
             .then(data => setContactInfo(data))
-            .catch(err => console.error('Failed to fetch contact info:', err))
-
+            .catch(() => {})
+        fetch('/api/fee-payment')
+            .then(res => res.json())
+            .then(data => { if (data.success) setAccounts(data.data) })
+            .catch(() => {})
         return () => setMounted(false)
     }, [])
 
@@ -31,23 +42,6 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
         setCopiedAccount(label)
         setTimeout(() => setCopiedAccount(null), 2000)
     }
-
-    const accounts = [
-        {
-            title: '노회 상회비',
-            bank: '농협',
-            accountNumber: '351-1196-9056-43',
-            accountHolder: '대한예수교장로회남경기노회',
-            label: 'presbyteryFee'
-        },
-        {
-            title: '전도·구제·미자립',
-            bank: '농협',
-            accountNumber: '351-1196-9067-23',
-            accountHolder: '대한예수교장로회남경기노회',
-            label: 'mission'
-        }
-    ]
 
     const modalContent = (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto">
@@ -82,7 +76,7 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {accounts.map((account) => (
                             <div
-                                key={account.label}
+                                key={account.id}
                                 className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-100 hover:border-blue-300 transition-all duration-300 hover:shadow-lg"
                             >
                                 <div className="flex items-start justify-between mb-4">
@@ -107,10 +101,10 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
                                                 {account.accountNumber}
                                             </p>
                                             <button
-                                                onClick={() => copyToClipboard(account.accountNumber, account.label)}
+                                                onClick={() => copyToClipboard(account.accountNumber, String(account.id))}
                                                 className="bg-white hover:bg-gray-50 text-gray-700 px-3 py-1 rounded-lg border border-gray-300 transition-colors flex items-center gap-1 text-sm"
                                             >
-                                                {copiedAccount === account.label ? (
+                                                {copiedAccount === String(account.id) ? (
                                                     <>
                                                         <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -128,7 +122,6 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
                                             </button>
                                         </div>
                                     </div>
-
                                     <div>
                                         <p className="text-sm text-gray-600 mb-1">예금주</p>
                                         <p className="text-base font-medium text-gray-800">{account.accountHolder}</p>

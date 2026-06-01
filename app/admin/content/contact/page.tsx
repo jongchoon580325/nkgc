@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -220,12 +221,12 @@ export default function AdminContactPage() {
                     >
                         {saving ? '저장 중...' : '✅ 저장하기'}
                     </button>
-                    <a
+                    <Link
                         href="/"
                         className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors text-center"
                     >
                         취소
-                    </a>
+                    </Link>
                 </div>
             </form>
 

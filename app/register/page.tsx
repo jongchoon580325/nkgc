@@ -114,7 +114,7 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 py-12">
-            <div className="container-custom max-w-2xl">
+            <div className="container-custom w-full md:max-w-[60%]">
                 <div className="bg-white rounded-2xl shadow-lg p-8">
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900">회원가입</h1>

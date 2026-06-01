@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { promises as fs } from 'fs'
 import path from 'path'
-import AdminOnly from '../../components/auth/AdminOnly'
-import PageHeader from '@/app/components/common/PageHeader'
+import AdminOnly from '@/components/auth/AdminOnly'
+import PageHeader from '@/components/common/PageHeader'
 
 interface PresidentData {
     name: string

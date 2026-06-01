@@ -1,4 +1,4 @@
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 
 export default function AdministrationFormsPage() {
     return (

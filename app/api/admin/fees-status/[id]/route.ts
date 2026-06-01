@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma';
 // PUT: 상회비 수정
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = parseInt(params.id);
+        const id = parseInt((await params).id);
         const body = await request.json();
         const {
             inspection,
@@ -44,10 +44,10 @@ export async function PUT(
 // DELETE: 상회비 삭제
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = parseInt(params.id);
+        const id = parseInt((await params).id);
 
         await prisma.feeStatus.delete({
             where: { id }

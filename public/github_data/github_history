@@ -1,3 +1,11 @@
+45. [2025-12-28 19:46] Commit: 75420ba
+   Title: fix: Admin Rules save logic, Tiptap HTML sync, and Div layout support
+   Description: Resolved issue where HTML mode edits were not syncing to form state in TiptapEditor. Implemented 'Div' extension to prevent Tiptap from stripping 'div' tags and classes, ensuring complex layouts (like Courtesy Rule) are preserved. Fixed admin rules API to clear cache on save.
+
+44. [2025-12-16 19:05] Commit: 67a7a1d
+   Title: Refine Admin Rules Editor: Sticky toolbar, active style reflection, modern success modal, and layout fixes
+   Description: Implemented sticky toolbar with auto-height editor and scrollable page layout. Added active style reflection to toolbar buttons. Integrated modern NotificationModal for save success/error feedback. Fixed missing editor toolbar content.
+
 43. [2025-12-14 17:42] Commit: 543cded
    Title: feat: Add Meeting Minutes and Dynamic Menu Management
    Description: Implemented public and admin pages for Meeting Minutes board, updated navigation, created 'Menu Management' system for toggling menu visibility, and reordered admin sidebar.
