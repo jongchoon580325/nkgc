@@ -72,22 +72,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        console.log('Post creation - Session:', session?.user);
-
-        if (!session || !session.user) {
-            return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
         }
 
         const body = await request.json();
         const { title, content, boardType, category, isNotice, attachments, authorName } = body;
 
-        console.log('Post creation - Request body:', { title, boardType, category, isNotice, authorName, attachmentCount: attachments?.length });
-
-        if (!title || !content || !boardType) {
-            return NextResponse.json(
-                { error: '제목, 내용, 게시판 타입은 필수입니다.' },
-                { status: 400 }
-            );
         }
 
         // 관리자 권한 체크 (공지사항 등록 시)
@@ -112,10 +101,6 @@ export async function POST(request: NextRequest) {
 
         // Ensure authorId is a valid number
         const authorId = typeof session.user.id === 'string' ? parseInt(session.user.id) : session.user.id;
-        console.log('Post creation - Author ID:', authorId, typeof authorId);
-
-        if (isNaN(authorId)) {
-            console.error('Invalid author ID:', session.user.id);
             return NextResponse.json(
                 { error: '사용자 정보가 올바르지 않습니다.' },
                 { status: 400 }
@@ -146,8 +131,6 @@ export async function POST(request: NextRequest) {
             }
         });
 
-        console.log('Post created successfully:', post.id);
-        return NextResponse.json(post, { status: 201 });
     } catch (error) {
         console.error('Error creating post:', error);
         return NextResponse.json(

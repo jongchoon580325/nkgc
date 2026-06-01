@@ -48,9 +48,6 @@ export default function DataManagementPage() {
         try {
             setIsRestoring(true);
             setShowRestoreConfirm(false);
-            console.log('Starting restore...');
-
-            const formData = new FormData();
             formData.append('file', restoreFile);
 
             const response = await fetch('/api/admin/restore', {
@@ -58,18 +55,11 @@ export default function DataManagementPage() {
                 body: formData,
             });
 
-            console.log('Restore response status:', response.status);
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
                 console.error('Restore failed:', errorData);
                 throw new Error(errorData.error || 'Restore failed');
             }
 
             const result = await response.json();
-            console.log('Restore result:', result);
-
-            alert('✅ 시스템 복구가 완료되었습니다!\n\n페이지를 새로고침합니다.');
             window.location.reload();
         } catch (error) {
             console.error('Restore error:', error);
@@ -88,11 +78,6 @@ export default function DataManagementPage() {
     const handleBackupDownload = async () => {
         try {
             setIsDownloadingBackup(true);
-            console.log('Starting backup download...');
-
-            const response = await fetch('/api/admin/backup');
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -100,11 +85,6 @@ export default function DataManagementPage() {
                 throw new Error(errorData.error || 'Backup failed');
             }
 
-            console.log('Creating blob...');
-            const blob = await response.blob();
-            console.log('Blob size:', blob.size);
-
-            const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `nkgc-backup-${new Date().toISOString().split('T')[0]}.zip`;

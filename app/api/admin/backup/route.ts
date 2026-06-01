@@ -9,31 +9,13 @@ export async function GET() {
     try {
         // Check authentication
         const session = await getServerSession(authOptions);
-        console.log('Session:', session);
-        console.log('User role:', session?.user?.role);
 
         if (!session || !session.user) {
-            console.log('No session or user found');
-            return NextResponse.json(
-                { error: 'Unauthorized - Please login' },
-                { status: 401 }
-            );
         }
 
         if (session.user.role?.toLowerCase() !== 'admin') {
-            console.log('User is not admin, role is:', session.user.role);
-            return NextResponse.json(
-                { error: 'Unauthorized - Admin access required' },
-                { status: 401 }
-            );
         }
 
-        console.log('Authentication passed, creating backup...');
-
-        // Create a new archiver instance
-        const archive = archiver('zip', {
-            zlib: { level: 9 } // Maximum compression
-        });
 
         // Paths to backup
         const dbPath = path.join(process.cwd(), 'prisma', 'dev.db');
@@ -76,34 +58,22 @@ export async function GET() {
                     try {
                         await fs.access(dbPath);
                         archive.file(dbPath, { name: 'database/dev.db' });
-                        console.log('Added database to backup');
-                    } catch {
-                        console.log('Database file not found, skipping...');
                     }
 
                     // Add data directory (JSON files)
                     try {
                         await fs.access(dataPath);
                         archive.directory(dataPath, 'data');
-                        console.log('Added data directory to backup');
-                    } catch {
-                        console.log('Data directory not found, skipping...');
                     }
 
                     // Add uploads directory
                     try {
                         await fs.access(uploadsPath);
                         archive.directory(uploadsPath, 'uploads');
-                        console.log('Added uploads directory to backup');
-                    } catch {
-                        console.log('Uploads directory not found, skipping...');
                     }
 
                     // Finalize the archive after adding all files
                     await archive.finalize();
-                    console.log('Archive finalized');
-                } catch (error) {
-                    console.error('Error adding files to archive:', error);
                     reject(NextResponse.json(
                         { error: 'Failed to add files to backup' },
                         { status: 500 }
