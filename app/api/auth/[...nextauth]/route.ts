@@ -3,6 +3,10 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 
+if (!process.env.NEXTAUTH_SECRET) {
+    throw new Error('NEXTAUTH_SECRET environment variable is required');
+}
+
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
@@ -89,7 +93,7 @@ export const authOptions: NextAuthOptions = {
         strategy: 'jwt',
         maxAge: 24 * 60 * 60, // 24시간
     },
-    secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-this-in-prod',
+    secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);

@@ -43,8 +43,9 @@ export async function POST(request: NextRequest) {
             }
 
             try {
-                // Hash the password
-                const hashedPassword = await bcrypt.hash(password || '123456', 10);
+                // CSV에 비밀번호 없으면 랜덤 12자 임시 비밀번호 생성
+                const tempPassword = password || Math.random().toString(36).slice(-12);
+                const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
                 await prisma.user.create({
                     data: {
