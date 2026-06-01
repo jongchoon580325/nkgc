@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { BoardType, BOARD_CONFIG } from '@/lib/board-config';
-import PageHeader from '@/app/components/common/PageHeader';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import PageHeader from '@/components/common/PageHeader';
+import NotificationModal from '@/components/common/NotificationModal';
 
 interface Post {
     id: number;

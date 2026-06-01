@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { BOARD_TYPES } from '@/lib/board-config';
 import PostList from '@/components/board/PostList';
 import ExamMaterialList from '@/components/board/ExamMaterialList';
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 
 export default function ExamMaterialsPage() {
     const [activeTab, setActiveTab] = useState<'EXAM_DEPT' | 'EXAM_USER'>('EXAM_DEPT');

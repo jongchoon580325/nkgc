@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { BoardType } from '@/lib/board-config';
 import { BoardAction } from '@/lib/permission';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import NotificationModal from '@/components/common/NotificationModal';
 
 interface PermissionMatrixProps {
     boardType: string;

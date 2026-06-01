@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 import FileUploader from '@/components/board/FileUploader';
 import { BOARD_TYPES } from '@/lib/board-config';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import NotificationModal from '@/components/common/NotificationModal';
 import BoardSettingsModal from '@/components/admin/BoardSettingsModal';
 
 interface MeetingMaterial {

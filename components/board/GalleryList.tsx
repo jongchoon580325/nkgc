@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { BoardType, BOARD_CONFIG } from '@/lib/board-config';
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 
 interface Post {
     id: number;

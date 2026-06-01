@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 import { MENU_ITEMS } from '@/lib/menu-constants';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import NotificationModal from '@/components/common/NotificationModal';
 
 export default function MenuManagementPage() {
     const [visibility, setVisibility] = useState<Record<string, boolean>>({});

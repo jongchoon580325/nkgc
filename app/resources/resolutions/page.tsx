@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import PageHeader from '@/app/components/common/PageHeader'
+import PageHeader from '@/components/common/PageHeader'
 import { BOARD_TYPES } from '@/lib/board-config'
 
 // Dynamic imports for viewers to avoid SSR issues

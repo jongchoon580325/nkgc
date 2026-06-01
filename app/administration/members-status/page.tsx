@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import type { Metadata } from 'next'
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 
 interface Member {
     id: number

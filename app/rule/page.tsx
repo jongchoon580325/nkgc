@@ -1,0 +1,456 @@
+'use client';
+
+import PageHeader from '@/components/common/PageHeader';
+
+export default function RulePage() {
+    return (
+        <main className="min-h-screen bg-gray-50">
+            <PageHeader title="노회규칙" />
+
+            <section className="section-padding">
+                <div className="container-custom max-w-4xl">
+                    <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+                        <div className="rules-content space-y-8">
+                            {/* 목차 */}
+                            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-10">
+                                <h2 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">목 차</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700">
+                                    <div className="hover:text-blue-600 transition-colors">
+                                        <span className="font-semibold w-24 inline-block">제 1 장</span> 총 칙
+                                    </div>
+                                    <div className="hover:text-blue-600 transition-colors">
+                                        <span className="font-semibold w-24 inline-block">제 2 장</span> 회원 및 총대
+                                    </div>
+                                    <div className="hover:text-blue-600 transition-colors">
+                                        <span className="font-semibold w-24 inline-block">제 3 장</span> 임원 및 임무
+                                    </div>
+                                    <div className="hover:text-blue-600 transition-colors">
+                                        <span className="font-semibold w-24 inline-block">제 4 장</span> 임원선거 및 임기
+                                    </div>
+                                    <div className="hover:text-blue-600 transition-colors">
+                                        <span className="font-semibold w-24 inline-block">제 5 장</span> 상비부 및 시찰회 위원
+                                    </div>
+                                    <div className="hover:text-blue-600 transition-colors">
+                                        <span className="font-semibold w-24 inline-block">제 6 장</span> 회 의
+                                    </div>
+                                    <div className="hover:text-blue-600 transition-colors">
+                                        <span className="font-semibold w-24 inline-block">제 7 장</span> 재 정
+                                    </div>
+                                    <div className="hover:text-blue-600 transition-colors">
+                                        <span className="font-semibold w-24 inline-block">제 8 장</span> 행정세칙
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Header */}
+                            <div className="text-center pb-8 border-b border-gray-200">
+                                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">노회 규칙</h1>
+                                <p className="text-gray-500">대한예수교장로회 남경기노회</p>
+                            </div>
+
+                            {/* Chapter 1 */}
+                            <div className="space-y-6">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 py-1 bg-blue-50/50">
+                                    제 1 장 총 칙
+                                </h3>
+                                <div className="space-y-4 pl-2 md:pl-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제1조 (칭호)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 회는 대한 예수교 장로회 남경기노회라 칭한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제2조 (위치)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 회는 경기도 의왕시 성고가로 161 지번에 위치한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제3조 (구역)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 노회의 구역은 수도권과 지 교회 이전으로 인한 범위내로 한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제4조 (대표)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 노회의 대표는 노회장으로 한다.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Chapter 2 */}
+                            <div className="space-y-6 pt-4">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 py-1 bg-blue-50/50">
+                                    제 2 장 회원 및 총대
+                                </h3>
+                                <div className="space-y-4 pl-2 md:pl-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제5조 (회원 및 총대)</h4>
+                                        <div className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100 space-y-3">
+                                            <div>
+                                                <span className="font-semibold block mb-1">1) 회원</span>
+                                                <p className="pl-3 text-sm text-gray-600">① 본 노회의 회원은 정치 10장 3조, 4조에 준한다.</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">2) 총대</span>
+                                                <p className="pl-3 text-sm text-gray-600">① 장로 총대는 정치 10장 2조, 4조에 준한다.</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">3) 편목</span>
+                                                <p className="pl-3 text-sm text-gray-600">① 편목은 정치 15장 13조에 준한다.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Chapter 3 */}
+                            <div className="space-y-6 pt-4">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 py-1 bg-blue-50/50">
+                                    제 3 장 임원 및 임무
+                                </h3>
+                                <div className="space-y-4 pl-2 md:pl-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-2">제6조 (임원 및 임무)</h4>
+                                        <ul className="list-none space-y-3 text-gray-700 pl-4 border-l-2 border-gray-100">
+                                            <li><span className="font-semibold text-gray-900">1) 노회장 1인 :</span> 노회장은 모든 회무를 총괄하며 노회를 대표한다.</li>
+                                            <li><span className="font-semibold text-gray-900">2) 부노회장 2인 :</span> 부노회장(목사 1인, 장로 1인)은 노회장을 보좌하며 노회장이 유고할 시(우선 목사 1인) 이를 대행한다.</li>
+                                            <li>
+                                                <span className="font-semibold text-gray-900">3) 서 기 1인 :</span> 노회로 오는 문서와 합법적으로 제출된 헌의 및 청원, 보고,문의 이명, 소송 등의 제반 서류를 접수한다.
+                                                <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-sm text-gray-600">
+                                                    <li>모든 서류를 보관한다.</li>
+                                                    <li>회의 결의서를 작성하여 각 교회로 발송한다.</li>
+                                                    <li>총대 천서를 검사하여 회원의 명부를 작성한다.</li>
+                                                </ul>
+                                            </li>
+                                            <li><span className="font-semibold text-gray-900">4) 부서기 1인 :</span> 서기를 보좌하며 유고시 이를 대행한다.</li>
+                                            <li><span className="font-semibold text-gray-900">5) 회록서기 1인 :</span> 회록을 작성하되 노회 폐회 후 20일 이내에 완전 회록을 작성하여 서기에게 보낸다.</li>
+                                            <li><span className="font-semibold text-gray-900">6) 부회록서기 1인 :</span> 회록서기를 보좌하며 회의 결의서를 작성하되 회록서기와 상의한 후 서기에게 전달한다. 회록 서기가 유고할 시 이를 대행한다.</li>
+                                            <li><span className="font-semibold text-gray-900">7) 회계 1인 :</span> 재정 출납을 정리하며 매 회 수지 결산을 보고하며 재정부원을 겸할 수 있다.</li>
+                                            <li><span className="font-semibold text-gray-900">8) 부회계 1인 :</span> 회계를 보좌하되 회계가 유고시 이를 대행한다.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Chapter 4 */}
+                            <div className="space-y-6 pt-4">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 py-1 bg-blue-50/50">
+                                    제 4 장 임원선거 및 임기
+                                </h3>
+                                <div className="space-y-4 pl-2 md:pl-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제7조 (임원선거)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            모든 임원은 각각 투표하여 선정하되 노회장과 부노회장 서기는 총 투표수의 과반수이상으로 하고 2차 투표에서도 과반수이상이 없을 시는 3차 투표에서 최고 득점자로 하고 기타 임원은 종다수로 한다. (단 최고득점자가 다수일 때는 2차 투표로 하고 2차 투표에서도 다수 일 때는 장립 순서대로 한다.)
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제8조 (임원임기)</h4>
+                                        <ul className="list-decimal list-inside space-y-1 text-gray-700 pl-4 border-l-2 border-gray-100">
+                                            <li>임원의 임기는 1년으로 하되 매 4월 정기 노회 시에 선출한다.</li>
+                                            <li>결원 된 임원의 보선은 정기 노회 또는 임시 노회에서 선출하되 그 임기는 전임자의 잔여기간으로 한다.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Chapter 5 */}
+                            <div className="space-y-6 pt-4">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 py-1 bg-blue-50/50">
+                                    제 5 장 상비부 및 시찰회 위원
+                                </h3>
+                                <div className="space-y-4 pl-2 md:pl-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-2">제9조 (상비부 조직)</h4>
+                                        <div className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100 space-y-3">
+                                            <div>
+                                                <span className="font-semibold block mb-1">1) 상비부 구성</span>
+                                                <p className="pl-3 mb-2 text-sm text-gray-600">각 상비부원은 9명까지 할 수 있으되 12부를 둔다. (단, 노회장과 서기는 상비부원이 될 수 없다.)</p>
+                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pl-3 text-sm bg-gray-50 p-3 rounded-lg">
+                                                    <div>① 헌의부</div>
+                                                    <div>② 정치부</div>
+                                                    <div>③ 재정부</div>
+                                                    <div>④ 전도부</div>
+                                                    <div>⑤ 교육부</div>
+                                                    <div>⑥ 군,경목부</div>
+                                                    <div>⑦ 고시부</div>
+                                                    <div>⑧ 면려부</div>
+                                                    <div>⑨ 규칙부</div>
+                                                    <div>⑩ 사회복지부</div>
+                                                    <div>⑪ 선교부</div>
+                                                    <div>⑫ 공천부</div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">2) 선출방법</span>
+                                                <ul className="list-none space-y-1 pl-3 text-sm text-gray-600">
+                                                    <li>① 상비부원은 4월 정기 노회시 공천부 보고에 의하여 본회가 선정하며 그 임기는 3년으로 하되 매년 3분의 1은 교체한다.</li>
+                                                    <li>② 임기 만료 후의 회원은 그 부에 계속 잔류하지 못한다.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <h4 className="font-bold text-gray-800 mb-2">제10조 (상비부의 임무)</h4>
+                                        <ul className="list-none space-y-2 text-gray-700 pl-4 border-l-2 border-gray-100 text-sm">
+                                            <li><span className="font-bold">1) 헌의부 :</span> 합법적인 서류를 서기에게서 전달받고 본 노회에 허락을 얻어 해당 부서로 보낸다.</li>
+                                            <li><span className="font-bold">2) 정치부(당회록검사부) :</span> 정책 및 행정에 관한 사항과 본 회가 맡긴 사항을 협의한다. 각 교회 당회록도 4월 노회 때 검사하며 지도 육성한다.</li>
+                                            <li><span className="font-bold">3) 재정부 :</span> 노회재정(수입, 지출)을 편성하며 본회가 맡긴 재정에 관한 사항을 협의 보고한다.</li>
+                                            <li><span className="font-bold">4) 전도부 :</span> 전도에 관한 사항을 장리하되 남, 여 전도 연합회를 지도 육성하며 감독하고 이를 본회에 보고한다.</li>
+                                            <li><span className="font-bold">5) 교육부 :</span> 모든 교육을 연구하여 지도하되 노회 산하 주일학교 연합회를 관리하며 지도한다.</li>
+                                            <li><span className="font-bold">6) 면려부 :</span> 청년 연합회와 학생 면려회를 지도 육성한다.</li>
+                                            <li>
+                                                <span className="font-bold">7) 고시부 :</span> 노회 내 각종 고시를 관리한다.(부원은 목사로 한다.)
+                                                <ul className="pl-4 mt-1 space-y-1 text-gray-600 border-l border-gray-200 ml-1">
+                                                    <li>① 목사고시 과목 : 신조, 권징조례, 예배모범, 목회학, 면접 (정치 10장 6조 7항)</li>
+                                                    <li>② 장로고시 과목 : 성경, 소요리문답, 정치, 권징조례, 예배모범, 상식, 면접 (단, 무임 장로는 필답고사를 면제한다.)</li>
+                                                    <li>③ 목사후보생고시 : 성경, 영어, 상식, 면접</li>
+                                                    <li>④ 전도사고시 : 성경, 영어, 정치, 예배모범, 상식, 면접</li>
+                                                </ul>
+                                            </li>
+                                            <li><span className="font-bold">8) 군,경목부 :</span> 군, 경목 사업을 추진한다.</li>
+                                            <li><span className="font-bold">9) 규칙부 :</span> 규칙에 관한 일을 관리 한다.</li>
+                                            <li><span className="font-bold">10) 선교부 :</span> 선교(전도)에 관한 일을 관리한다.</li>
+                                            <li><span className="font-bold">11) 사회복지부 :</span> 구제, 은급에 관한 일을 관리한다.</li>
+                                            <li><span className="font-bold">12) 감사부 :</span> 노회내의 회계 감사의 일을 한다. 단 목사 3인 장로2인의 비례로 구성한다.</li>
+                                            <li><span className="font-bold">13) 공천부 :</span> 각 시찰장으로 한다.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <h4 className="font-bold text-gray-800 mb-1">제11조 (시찰회)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            각 시찰은 4월 정기노회의 총대로 구성하고(노회 1개월 전) 본 노회에 보고하되 임기는 1년으로 한다. 시찰위원은 시찰 형편 따라 선정한다.
+                                        </p>
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <h4 className="font-bold text-gray-800 mb-2">제12조 (위원 및 감사)</h4>
+                                        <ul className="list-decimal list-inside space-y-1 text-gray-700 pl-4 border-l-2 border-gray-100">
+                                            <li>통계위원 3 인 : 서기, 부서기는 통계위원이 되고 1명은 노회장이 지시한다.</li>
+                                            <li>천서위원 3 인 : 노회장과 서기, 부서기로 한다.</li>
+                                            <li>회의순서 위원 9 인 : 노회 임원이 회의순서 위원이 된다.</li>
+                                            <li>광고, 지시위원 : 노회장이 지명한다.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <h4 className="font-bold text-gray-800 mb-2">제13조 (위원의 임무)</h4>
+                                        <ul className="list-none space-y-2 text-gray-700 pl-4 border-l-2 border-gray-100 text-sm">
+                                            <li>
+                                                <span className="font-semibold">1) 통계 위원 :</span>
+                                                <ul className="pl-4 mt-1 list-disc list-inside text-gray-600">
+                                                    <li>각 교회 현황을 보고 받고 통계를 작성한다.</li>
+                                                    <li>총회총대 투표 전 당회수와 그 현황을 보고한다.</li>
+                                                </ul>
+                                            </li>
+                                            <li><span className="font-semibold">2) 천서 위원 :</span> 천서를 검사하여 회원명부를 작성한다.</li>
+                                            <li><span className="font-semibold">3) 회의순서위원 :</span> 회의순서를 작성하여 개회 초에 보고한다.</li>
+                                            <li><span className="font-semibold">4) 광고 위원 :</span> 광고 및 지시에 관한 일을 담당한다.</li>
+                                            <li><span className="font-semibold">5) 지시위원 :</span> 회의에 질서를 담당한다.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <h4 className="font-bold text-gray-800 mb-1">제14조 (이사)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            교단 신학대학교와 기독신문사 및 총회선교회에 이사를 파송하되 무기명 투표하여 종다수로 한다. 단, 최고득점자가 다수일 때는 2차 투표를 하고, 2차 투표에서도 다수일 때는 장립순위로 한다.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Chapter 6 */}
+                            <div className="space-y-6 pt-4">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 py-1 bg-blue-50/50">
+                                    제 6 장 회 의
+                                </h3>
+                                <div className="space-y-4 pl-2 md:pl-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-2">제15조 (노회의 회의)</h4>
+                                        <div className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100 space-y-3">
+                                            <div>
+                                                <span className="font-semibold block mb-1">1) 정기노회</span>
+                                                <p className="pl-3 text-sm text-gray-600">년 2차로 하되 4월 첫 주일 후 화요일 오전10시와 10월 첫 주일 후 화요일 오전10시로 한다. (단, 노회일자가 공휴일일 경우에는 변경할 수 있다.)</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">2) 임시노회</span>
+                                                <p className="pl-3 text-sm text-gray-600">정치 제 10장 9조에 준 한다.</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">3) 상비부 회의</span>
+                                                <ul className="pl-3 space-y-1 list-none text-sm text-gray-600">
+                                                    <li>① 헌의부, 임원회, 정치부 공천부는 1주일 전 화요일에 노회 장소에서 준비회로 모인다.</li>
+                                                    <li>② 고시부 : 고시부는 노회 개최 15일 전 오후 5시에 모여 각종 고시를 실시한다.</li>
+                                                    <li>③ 감사부 : 감사부는 노회 개최 15일 전 오후 5시 노회 장소에서 감사한다.</li>
+                                                    <li>④ 상비부 소집 : 상비부 소집자는 1년조 선기자가 할 수 있다.</li>
+                                                    <li>⑤ 상비부 회의 : 성수가 미달되더라도 임시 결의 할 수 있다. 단, 추인을 받아야 한다.</li>
+                                                    <li>➅ 상비부 소집 : 노회의 허락을 받아야 한다.</li>
+                                                    <li>➆ 임원회 : 임원회는 임원으로 조직하되 회장과 서기는 노회장과 서기가 겸한다.(단, 임무는 노회가 위임한 사건만 취급한다.)</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Chapter 7 */}
+                            <div className="space-y-6 pt-4">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 py-1 bg-blue-50/50">
+                                    제 7 장 재 정
+                                </h3>
+                                <div className="space-y-4 pl-2 md:pl-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제16조 (재원)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 노회의 재정은 각 교회의 상납금과 기타 특별헌금으로 운영한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제17조 (회계연도)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 노회의 회계 연도는 매년 4월 노회 이후 익년 4월 노회 전까지로 한다. (단, 미납금은 이월금에 포함하며 미납 지교회의 모든 회원권은 노회비 완납 시 까지 효력 정지 할 수 있다.)
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제18조 (보고)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            회계는 재정 상황을 노회 전에 임원에게 보고해야 한다.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Chapter 8 */}
+                            <div className="space-y-6 pt-4">
+                                <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-blue-600 pl-4 py-1 bg-blue-50/50">
+                                    제 8 장 행정세칙
+                                </h3>
+                                <div className="space-y-4 pl-2 md:pl-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제19조 (서류제출 기한)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            노회에 상정하는 모든 서류는(소송 및 진정) 노회 개회 20일 전까지 하되 시찰회를 경유하여 노회 서기에게 제출해야 한다. 단, 타 노회 목사가 본 노회에 위임청빙이 있을 시는 노회 개회 1개월 전에 해야 한다. (정치 16장 2조) 그리고 당석에서 제안하는 안건은 회원 10인 이상 연서로 개회 후 3시간 이내에 서기에게 제출해야 한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제20조 (장로고시 자격)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            장로고시 응시자는 총회 성경통신과를 졸업해야 한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제21조 (시행기한)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            각 교회의 위임, 장립, 취임 건은 허락을 받은 날로부터 1년 내에 시행해야 한다. 사정이 있을 시는 한 회기(6개월)에 한하여 노회에 연기 허락을 받아야 한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-2">제22조 (노회 제출 서류)</h4>
+                                        <div className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100 space-y-4 text-sm">
+                                            <div>
+                                                <span className="font-semibold block mb-1">1) 강도사 인허 청원</span>
+                                                <ul className="pl-4 list-disc text-gray-600">
+                                                    <li>본인의 청원서 1통, 당회장 추천서 1통, 강도사 고시 합격증 사본, 이력서 1통, 가족관계증명서와 주민등록등본 각1통</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">2) 강도사 고시 청원</span>
+                                                <ul className="pl-4 list-disc text-gray-600">
+                                                    <li>본인의 청원서 1통, 당회장의 추천서 1통, 신학대학원 졸업증명서 또는 졸업예정증명서 1통</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">3) 목사 고시청원</span>
+                                                <ul className="pl-4 list-disc text-gray-600">
+                                                    <li>본인의 청원서 1통, 강도사 인허증 사본 1통, 당회장 청원서 및 추천서 1통, 청빙서 1통, 이력서 1통, 가족관계증명서와 주민등록등본 각 1통</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">4) 목사청빙</span>
+                                                <ul className="pl-4 list-disc text-gray-600">
+                                                    <li>당회장의 청원서 1통, 공동의회 회의록 사본 1통, 이력서 1통, 청빙서 2통, 가족관계증명서와 주민등록등본 각1통</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold block mb-1">5) 목사후보생 고시청원(전도사 고시)</span>
+                                                <ul className="pl-4 list-disc text-gray-600">
+                                                    <li>당회장의 추천서 1통, 본인의 청원서 1통, 최종학교 졸업증명서 또는 졸업예정 증명서 1통, 전도사 또는 신학지원 동기서 1통(200자 원고지 5매), 이력서 1통(세례 년도와 교회 명기), 가족관계증명서와 주민등록등본 각 1통</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제23조 (통계표)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            노회 산하교회는 통계표를 총회와 노회에 제출해야 한다. 통계표를 제출하지 않으면 청원권, 발언권 및 여타 회원권이 중지 될 수 있다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제24조 (고시 및 청원)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            목사 후보생 및 전도사 고시청원은 고시부에서 그 적성(신상)을 심사하고 신학 계속 청원은 교육부에서 주관한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제25조 (미조직교회 목사청빙)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            미조직교회의 목사 청빙은 정치 4장 4조 2항에 준한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제26조 (목사 위임식)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            목사의 위임식은 노회가 주관한다. 단, 시찰회에서 대행 할 수 있다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제27조 (교역자 채용)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            노회산하교회는 강도사, 전도사를 채용할 시 본 노회 소속한 자로 해야 한다. (단, 타 노회에 소속한 자를 채용할 시 6개월 이내에 이명토록 해야 한다.)
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제28조 (준용)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 규칙의 미비점은 총회 헌법과 각 치리회의 보통 회의 규칙 및 만국회의 통상규칙에 준한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제29조 (개정)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 규칙의 개정은 본 회의 결의로 정기노회 출석회원 3분의 2이상의 찬성이 있어야 한다.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-800 mb-1">제30조 (시행)</h4>
+                                        <p className="text-gray-700 leading-relaxed pl-4 border-l-2 border-gray-100">
+                                            본 노회 규칙은 통과일로부터 시행한다.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer History */}
+                            <div className="pt-12 text-center">
+                                <p className="text-sm text-gray-500 font-medium">총 8장 30조</p>
+                                <div className="mt-4 text-xs text-gray-400 space-y-1">
+                                    <p>2002년 7월 9일 제정</p>
+                                    <p>2012년 10월 9일 (정기노회 1차 개정)</p>
+                                    <p>2021년 4월 6일 (개정)</p>
+                                    <p>2025년 10월 14일 (개정)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    );
+}

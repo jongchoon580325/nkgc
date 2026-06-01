@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import PageHeader from '@/app/components/common/PageHeader';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import PageHeader from '@/components/common/PageHeader';
+import NotificationModal from '@/components/common/NotificationModal';
 import FileUploader from '@/components/board/FileUploader';
 import Image from 'next/image';
 

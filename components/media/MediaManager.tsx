@@ -6,7 +6,7 @@ import { getFolderContents, createFolder, getAllFolders } from '@/app/actions/fo
 import { bulkDeleteAssets, moveAssets, updateAssetMetadata } from '@/app/actions/media';
 import { getFileIcon, isImage, buildFolderTree } from '@/lib/utils/media';
 import MediaUploader from './MediaUploader';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import NotificationModal from '@/components/common/NotificationModal';
 
 interface MediaManagerProps {
     initialFolderId?: string | null;

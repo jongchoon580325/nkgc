@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { BoardType, BOARD_CONFIG } from '@/lib/board-config';
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 // import FileUploader from './FileUploader';
 import TiptapEditor from './TiptapEditor';
 import MediaPickerModal from '@/components/media/MediaPickerModal';
-import NotificationModal from '@/app/components/common/NotificationModal';
+import NotificationModal from '@/components/common/NotificationModal';
 import Image from 'next/image';
 import { getFileIcon, isImage } from '@/lib/utils/media';
 

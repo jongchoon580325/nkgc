@@ -1,6 +1,6 @@
 'use client';
 
-import PageHeader from '@/app/components/common/PageHeader';
+import PageHeader from '@/components/common/PageHeader';
 import MediaManager from '@/components/media/MediaManager';
 
 export default function MediaAdminPage() {

@@ -3,7 +3,7 @@ import AdminOnly from '../../components/auth/AdminOnly'
 import fs from 'fs/promises'
 import path from 'path'
 import InspectionsClient from './InspectionsClient'
-import PageHeader from '@/app/components/common/PageHeader'
+import PageHeader from '@/components/common/PageHeader'
 
 export interface PersonInfo {
     name: string

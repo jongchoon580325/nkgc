@@ -5,7 +5,7 @@ import { marked } from 'marked'
 import Image from 'next/image'
 import TiptapEditor from '@/components/board/TiptapEditor'
 import MediaPickerModal from '@/components/media/MediaPickerModal'
-import NotificationModal from '@/app/components/common/NotificationModal'
+import NotificationModal from '@/components/common/NotificationModal'
 import { getFileIcon, isImage } from '@/lib/utils/media'
 
 export default function RulesAdminPage() {
