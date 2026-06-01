@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 interface HeroConfig {
     id: number;
@@ -161,18 +162,18 @@ export default function HeroSection() {
             {/* Call to Action Buttons (Moved to Bottom) */}
             <div className="absolute bottom-[140px] left-0 right-0 z-20 px-4">
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a
+                    <Link
                         href="/board/FORM_ADMIN"
                         className="px-8 py-4 bg-white text-brand-700 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                     >
                         노회 행정 서식 다운로드
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                         href="/board/NOTICE"
                         className="px-8 py-4 bg-accent-500 text-white rounded-lg font-semibold text-lg hover:bg-accent-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 border-2 border-white/30"
                     >
                         최신 노회 공지 확인
-                    </a>
+                    </Link>
                 </div>
             </div>
 

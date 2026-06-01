@@ -114,7 +114,7 @@ export default function MenuManagementPage() {
 
     return (
         <div className="max-w-4xl mx-auto pb-10">
-            <PageHeader title="메뉴 관리" description="홈페이지 상단 메뉴의 보임/숨김 처리를 관리합니다." />
+            <PageHeader title="메뉴 관리" subtitle="홈페이지 상단 메뉴의 보임/숨김 처리를 관리합니다." />
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
                 <div className="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { writeFile, unlink, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
@@ -131,7 +131,7 @@ export async function PUT(request: NextRequest) {
             )
         }
 
-        let updateData: any = {
+        const updateData: any = {
             meetingNum,
             sessionNum,
             meetingType,

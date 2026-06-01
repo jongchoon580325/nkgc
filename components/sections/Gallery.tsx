@@ -140,7 +140,7 @@ export default function Gallery() {
                     {/* View All Button */}
                     <div className="text-center mt-10">
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <a
+                            <Link
                                 href="/board/gallery"
                                 className="inline-flex items-center px-8 py-3 bg-white text-primary-blue border-2 border-primary-blue rounded-lg font-semibold hover:bg-primary-blue hover:text-white transition-all duration-300"
                             >
@@ -156,8 +156,8 @@ export default function Gallery() {
                                 >
                                     <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 href="/board/video"
                                 className="inline-flex items-center px-8 py-3 bg-accent-500 text-white rounded-lg font-semibold hover:bg-accent-600 transition-all duration-300"
                             >
@@ -174,7 +174,7 @@ export default function Gallery() {
                                     <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                     <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

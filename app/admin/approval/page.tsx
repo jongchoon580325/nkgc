@@ -324,7 +324,7 @@ export default function ApprovalManagementPage() {
                         </button>
                         <button
                             onClick={config.onConfirm}
-                            disabled={isProcessing || config.confirmDisabled}
+                            disabled={isProcessing || (config as any).confirmDisabled}
                             className={`flex-1 px-4 py-3 text-white rounded-lg transition-colors font-medium disabled:opacity-50 ${config.confirmClass}`}
                         >
                             {isProcessing ? (

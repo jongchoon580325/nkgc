@@ -171,7 +171,7 @@ export default function MeetingMinutesAdminPage() {
 
     return (
         <div className="flex flex-col gap-6">
-            <PageHeader title="노회록 관리" description="노회록 자료를 등록하고 관리합니다." />
+            <PageHeader title="노회록 관리" subtitle="노회록 자료를 등록하고 관리합니다." />
 
             {/* Actions */}
             <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">

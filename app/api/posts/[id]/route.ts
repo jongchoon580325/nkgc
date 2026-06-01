@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import fs from 'fs';
 import path from 'path';
 
@@ -12,7 +12,7 @@ export async function GET(
 ) {
     const params = await props.params;
     try {
-        const postId = parseInt(params.id);
+        const postId = parseInt((await params).id);
 
         // 조회수 증가
         await prisma.post.update({
@@ -79,7 +79,7 @@ export async function PATCH(
             return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
         }
 
-        const postId = parseInt(params.id);
+        const postId = parseInt((await params).id);
         const body = await request.json();
         const { title, content, isNotice, category, newAttachments, deletedFileIds, authorName } = body;
 
@@ -196,7 +196,7 @@ export async function DELETE(
             return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
         }
 
-        const postId = parseInt(params.id);
+        const postId = parseInt((await params).id);
 
         const post = await prisma.post.findUnique({
             where: { id: postId },

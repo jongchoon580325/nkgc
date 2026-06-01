@@ -802,7 +802,7 @@ export default function MembersManagementPage() {
                                         const totalPages = Math.ceil(filteredMembers.length / itemsPerPage)
                                         const pages = []
                                         let start = Math.max(1, currentPage - 2)
-                                        let end = Math.min(totalPages, start + 4)
+                                        const end = Math.min(totalPages, start + 4)
                                         if (end - start < 4) start = Math.max(1, end - 4)
 
                                         for (let i = start; i <= end; i++) {

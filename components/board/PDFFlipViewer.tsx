@@ -110,7 +110,7 @@ export default function PDFFlipViewer({ fileUrl, title, onClose }: PDFFlipViewer
                     className="flex justify-center"
                 >
                     {numPages > 0 && (
-                        // @ts-ignore
+                        // @ts-expect-error
                         <HTMLFlipBook
                             width={currentWidth}
                             height={currentHeight}

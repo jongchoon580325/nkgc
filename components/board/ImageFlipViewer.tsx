@@ -106,7 +106,7 @@ export default function ImageFlipViewer({ images, title, onClose }: ImageFlipVie
             {/* Flip Book Container */}
             <div className="flex-1 flex items-center justify-center overflow-auto py-4 px-8">
                 {isClient && (
-                    // @ts-ignore - react-pageflip has incomplete TypeScript definitions
+                    // @ts-expect-error - react-pageflip has incomplete TypeScript definitions
                     <HTMLFlipBook
                         ref={flipBookRef}
                         width={currentWidth}

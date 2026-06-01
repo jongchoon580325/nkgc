@@ -1,5 +1,3 @@
-
-import { prisma } from '@/lib/prisma';
 import { BoardType } from './board-config';
 
 // Action Codes as per PRD
@@ -32,43 +30,9 @@ export async function checkBoardPermission(params: CheckPermissionParams): Promi
         }
     }
 
-    // LIST/READ/WRITE/COMMENT require checking the BoardPermission matrix
-    try {
-        // Fetch permission setting for this board and role
-        // We might fallback to 'guest' if no userRole
-        const targetRole = userRole || 'guest';
-
-        const permission = await prisma.boardPermission.findUnique({
-            where: {
-                boardType_role: {
-                    boardType: boardType.toString(),
-                    role: targetRole
-                }
-            }
-        });
-
-        if (!permission) {
-            // No specific permission set. Use Default Policies.
-            return getDefaultPermission(boardType.toString(), targetRole, action);
-        }
-
-        // Actions are stored as JSON stirng or specific format. 
-        // Schema definition: actions String @default("[]") // JSON array
-        // We parse it.
-        let allowedActions: string[] = [];
-        try {
-            allowedActions = JSON.parse(permission.actions);
-        } catch (e) {
-            console.error('Failed to parse permission actions', e);
-            return false;
-        }
-
-        return allowedActions.includes(action);
-
-    } catch (error) {
-        console.error('Permission check failed:', error);
-        return false;
-    }
+    // BoardPermission 모델 미구현 — 기본 정책으로 폴백
+    const targetRole = userRole || 'guest';
+    return getDefaultPermission(boardType.toString(), targetRole, action);
 }
 
 function getDefaultPermission(boardType: string, role: string, action: BoardAction): boolean {
