@@ -106,7 +106,6 @@ export default function ExamMaterialList({ boardType }: ExamMaterialListProps) {
 
     const isExamUser = boardType === 'EXAM_USER';
 
-    console.log('ExamMaterialList State:', { loading, postsLength: posts.length, gridColumns, viewMode });
 
     return (
         <div className="container mx-auto px-4 py-8">

@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
             });
 
             if (existingUser) {
-                console.log(`Skipped duplicate username: ${username}`);
                 skipped++;
                 continue;
             }

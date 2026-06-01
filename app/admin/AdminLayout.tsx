@@ -3,8 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import AdminSidebar from '../components/admin/AdminSidebar';
-import AdminHeader from '../components/admin/AdminHeader';
+import AdminSidebar from '@/components/admin/AdminSidebar';
+import AdminHeader from '@/components/admin/AdminHeader';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { data: session, status } = useSession();

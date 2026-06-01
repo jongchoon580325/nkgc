@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
         const sessionNum = formData.get('sessionNum') ? parseInt(formData.get('sessionNum') as string) : null
         const title = formData.get('title') as string
 
-        console.log('Upload request:', { tabType, meetingNum, meetingType, sessionNum, title, fileName: file?.name })
 
         if (!file || !tabType || !meetingNum || !title || !meetingType) {
             return NextResponse.json(
@@ -62,7 +61,6 @@ export async function POST(request: NextRequest) {
 
         // 디렉토리가 없으면 생성
         if (!existsSync(uploadDir)) {
-            console.log('Creating directory:', uploadDir)
             await mkdir(uploadDir, { recursive: true })
         }
 
@@ -70,7 +68,6 @@ export async function POST(request: NextRequest) {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
         await writeFile(filePath, buffer)
-        console.log('File saved:', filePath)
 
         // DB에 저장
         const resolution = await prisma.resolution.create({
@@ -87,7 +84,6 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        console.log('Resolution created:', resolution.id)
         return NextResponse.json({ success: true, data: resolution })
     } catch (error) {
         console.error('결의서 업로드 오류:', error)
@@ -178,7 +174,6 @@ export async function PUT(request: NextRequest) {
 
             // 디렉토리가 없으면 생성
             if (!existsSync(uploadDir)) {
-                console.log('Creating directory:', uploadDir)
                 await mkdir(uploadDir, { recursive: true })
             }
 

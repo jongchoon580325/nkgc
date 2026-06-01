@@ -72,7 +72,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        console.log('Post creation - Session:', session?.user);
 
         if (!session || !session.user) {
             return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
@@ -81,7 +80,6 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { title, content, boardType, category, isNotice, attachments, authorName } = body;
 
-        console.log('Post creation - Request body:', { title, boardType, category, isNotice, authorName, attachmentCount: attachments?.length });
 
         if (!title || !content || !boardType) {
             return NextResponse.json(
@@ -112,7 +110,6 @@ export async function POST(request: NextRequest) {
 
         // Ensure authorId is a valid number
         const authorId = typeof session.user.id === 'string' ? parseInt(session.user.id) : session.user.id;
-        console.log('Post creation - Author ID:', authorId, typeof authorId);
 
         if (isNaN(authorId)) {
             console.error('Invalid author ID:', session.user.id);
@@ -146,7 +143,6 @@ export async function POST(request: NextRequest) {
             }
         });
 
-        console.log('Post created successfully:', post.id);
         return NextResponse.json(post, { status: 201 });
     } catch (error) {
         console.error('Error creating post:', error);

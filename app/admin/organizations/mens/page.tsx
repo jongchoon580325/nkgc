@@ -1,4 +1,4 @@
-import OrganizationAdminForm from '../../../components/admin/OrganizationAdminForm'
+import OrganizationAdminForm from '@/components/admin/OrganizationAdminForm'
 
 export default function AdminMensPage() {
     return (

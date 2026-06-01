@@ -12,13 +12,11 @@ export async function GET(request: NextRequest) {
         const searchParams = request.nextUrl.searchParams
         const type = searchParams.get('type')
 
-        console.log(`[API] Admin Rules GET request: type=${type}`)
 
         if (type) {
             const rule = await prisma.rule.findUnique({
                 where: { type }
             })
-            console.log(`[API] Found rule for type ${type}:`, rule ? 'Exists' : 'Not found')
             return NextResponse.json({ success: true, data: rule })
         }
 
@@ -40,7 +38,6 @@ export async function POST(request: NextRequest) {
 
         // 관리자 권한 확인
         if (!session || !['admin', 'super_admin', 'ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
-            console.log('[API] Unauthorized access attempt')
             return NextResponse.json(
                 { success: false, error: '권한이 없습니다.' },
                 { status: 403 }
@@ -50,7 +47,6 @@ export async function POST(request: NextRequest) {
         const body = await request.json()
         const { type, content } = body
 
-        console.log(`[API] Rule Save Request: type=${type}, content_length=${content?.length}`)
 
         if (!type || !content) {
             return NextResponse.json(
@@ -67,7 +63,6 @@ export async function POST(request: NextRequest) {
             create: { type, content }
         })
 
-        console.log(`[API] Rule Saved Successfully: ID=${rule.id}`)
 
         // Cache Invalidation
         revalidatePath('/admin/rules')
