@@ -44,19 +44,13 @@ export default function LoginPage() {
                     setLoginError(result.error);
                 }
             } else {
-                // 로그인 성공 - 세션 정보 가져오기
+                // 로그인 성공 - 세션 role 기반으로 리다이렉트
                 const sessionResponse = await fetch('/api/auth/session');
-                const session = await sessionResponse.json();
+                const sessionData = await sessionResponse.json();
 
-                // 관리자 권한 체크 (ID에 'admin'이 포함되어 있는지 확인)
-                const usernameLower = username.toLowerCase();
-                const isAdminUser = usernameLower.includes('admin');
-
-                // 'admin'이 포함된 ID는 /admin(대시보드)으로, 그 외에는 HOME으로
-                const redirectUrl = isAdminUser ? '/admin' : '/';
-
-                // 확실한 이동을 위해 window.location.href 사용
-                window.location.href = redirectUrl;
+                const adminRoles = ['admin', 'super_admin'];
+                const isAdmin = adminRoles.includes(sessionData?.user?.role);
+                window.location.href = isAdmin ? '/admin' : '/';
             }
         } catch (error) {
             setLoginError('로그인 중 오류가 발생했습니다.');
