@@ -54,13 +54,28 @@ export default function MediaUploader({
     // Handle File Drop
     const onDrop = useCallback(async (files: File[]) => {
         setUploading(true);
+        console.log("Starting upload. Target Folder ID:", targetFolderId); // DEBUG LOG
+
+        for (const file of files) {
+            const formData = new FormData();
             formData.append('file', file);
 
             // Explicitly append folderId if it exists
             if (targetFolderId) {
+                console.log("Appending folderId to FormData:", targetFolderId);
+                formData.append('folderId', targetFolderId);
             } else {
+                console.log("No targetFolderId, uploading to ROOT");
+            }
+
+            try {
+                const res = await fetch('/api/media/upload', { method: 'POST', body: formData });
                 if (!res.ok) throw new Error('Upload failed');
                 const result = await res.json();
+                console.log("Upload result:", result);
+            }
+            catch (e: any) {
+                console.error(e);
                 safeAlert('업로드 실패', e.message || file.name);
             }
         }
@@ -79,6 +94,13 @@ export default function MediaUploader({
             setNewFolderName('');
             setIsCreatingFolder(false);
             if (res.folder) {
+                console.log("Created element, setting ID:", res.folder.id);
+                setTargetFolderId(res.folder.id); // Auto-select new folder
+                // Note: onDrop will pick this up on next render via dependency array
+            }
+            loadFolders(); // Refresh tree
+        } else {
+            safeAlert('오류', '폴더 생성 실패: ' + res.error);
         }
     };
 
@@ -95,6 +117,8 @@ export default function MediaUploader({
                                 value={targetFolderId || ''}
                                 onChange={(e) => {
                                     const val = e.target.value || null;
+                                    console.log("Folder selection changed to:", val);
+                                    setTargetFolderId(val);
                                 }}
                                 className="flex-1 text-sm border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 py-1.5"
                             >

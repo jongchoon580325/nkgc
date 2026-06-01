@@ -38,6 +38,14 @@ export async function POST(request: NextRequest) {
             });
 
             if (existingUser) {
+                console.log(`Skipped duplicate username: ${username}`);
+                skipped++;
+                continue;
+            }
+
+            try {
+                // Hash the password
+                const hashedPassword = await bcrypt.hash(password || '123456', 10);
 
                 await prisma.user.create({
                     data: {

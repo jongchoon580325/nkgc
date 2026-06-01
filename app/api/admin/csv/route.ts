@@ -365,6 +365,12 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        console.log(`Importing ${parsed.data.length} records for ${target}`);
+
+        // Process based on target type
+        switch (target) {
+            case 'standing-committees':
+                await importStandingCommittees(parsed.data);
                 break;
             case 'fees-status':
                 await importFeesStatus(parsed.data);
@@ -427,6 +433,12 @@ async function importStandingCommittees(data: any[]) {
     await prisma.standingCommittee.createMany({
         data: records
     });
+    console.log(`Imported ${records.length} standing committees`);
+}
+
+async function importFeesStatus(data: any[]) {
+    // Delete existing data
+    await prisma.feeStatus.deleteMany({});
 
     // Insert new data
     const records = data.map(row => {
@@ -450,6 +462,17 @@ async function importStandingCommittees(data: any[]) {
         data: records
     });
 
+    console.log(`Imported ${records.length} fee statuses`);
+}
+
+async function importMembers(data: any[]) {
+    // Delete existing members (pastors and elders only)
+    // We do NOT delete admin users
+    await prisma.user.deleteMany({
+        where: {
+            role: { in: ['pastor', 'elder'] }
+        }
+    });
 
     const defaultPassword = await bcrypt.hash('presbytery2024', 10);
     const timestamp = Date.now();
@@ -490,6 +513,17 @@ async function importStandingCommittees(data: any[]) {
     await prisma.user.createMany({
         data: records
     });
+    console.log(`Imported ${records.length} members`);
+}
+
+async function importCurrentOfficers(data: any[]) {
+    const officers = data.map(row => ({
+        position: row['직책'] || '',
+        name: row['이름'] || '',
+        title: row['직분'] || '',
+        church: row['교회명'] || '',
+        photo: row['사진'] || ''
+    }));
 
     // Read existing file to preserve 'term'
     const filePath = path.join(process.cwd(), 'data', 'officers.json');
@@ -507,6 +541,24 @@ async function importStandingCommittees(data: any[]) {
     };
 
     await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
+    console.log(`Imported ${officers.length} current officers`);
+}
+
+async function importPastOfficers(data: any[]) {
+    const years = data.map(row => ({
+        year: row['연도'] || '',
+        church: row['교회명'] || '',
+        officers: {
+            "노회장": row['노회장'] || '',
+            "부노회장": row['부노회장'] || '',
+            "서기": row['서기'] || '',
+            "부서기": row['부서기'] || '',
+            "회록서기": row['회록서기'] || '',
+            "부회록서기": row['부회록서기'] || '',
+            "회계": row['회계'] || '',
+            "부회계": row['부회계'] || ''
+        }
+    }));
 
     const newData = {
         years: years
@@ -514,6 +566,12 @@ async function importStandingCommittees(data: any[]) {
 
     const filePath = path.join(process.cwd(), 'data', 'past-officers.json');
     await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
+    console.log(`Imported ${years.length} past officers years`);
+}
+
+async function importInspections(data: any[]) {
+    // Group by inspection ID
+    const inspectionsMap = new Map();
 
     data.forEach(row => {
         const id = row['시찰ID'];
@@ -553,6 +611,12 @@ async function importStandingCommittees(data: any[]) {
     const newData = Array.from(inspectionsMap.values());
     const filePath = path.join(process.cwd(), 'data', 'inspections.json');
     await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
+    console.log(`Imported ${newData.length} inspections`);
+}
+
+async function importOrganizations(data: any[]) {
+    // Group by organization ID
+    const orgsMap = new Map();
 
     data.forEach(row => {
         const id = row['기관ID'];
@@ -602,3 +666,5 @@ async function importStandingCommittees(data: any[]) {
 
     const filePath = path.join(process.cwd(), 'data', 'organizations.json');
     await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
+    console.log(`Imported ${newData.organizations.length} organizations`);
+}
