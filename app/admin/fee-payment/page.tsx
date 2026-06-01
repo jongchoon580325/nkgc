@@ -30,6 +30,12 @@ export default function FeePaymentAdminPage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState<FeePaymentAccount | null>(null);
     const [formData, setFormData] = useState(emptyForm);
+
+    // 상회비 문의 전화번호
+    const [inquiryPhone, setInquiryPhone] = useState('');
+    const [inquiryPhoneInput, setInquiryPhoneInput] = useState('');
+    const [isPhoneEditing, setIsPhoneEditing] = useState(false);
+    const [isPhoneSaving, setIsPhoneSaving] = useState(false);
     const [modal, setModal] = useState({
         isOpen: false,
         title: '',
@@ -51,7 +57,56 @@ export default function FeePaymentAdminPage() {
         });
     };
 
-    useEffect(() => { fetchAccounts(); }, []);
+    useEffect(() => {
+        fetchAccounts();
+        fetchInquiryPhone();
+    }, []);
+
+    const fetchInquiryPhone = async () => {
+        try {
+            const res = await fetch('/api/contact-info');
+            const data = await res.json();
+            const phone = data?.secretary?.phone || '';
+            setInquiryPhone(phone);
+            setInquiryPhoneInput(phone);
+        } catch {
+            // contact-info 없을 경우 무시
+        }
+    };
+
+    const handleSavePhone = async () => {
+        if (!inquiryPhoneInput.trim()) {
+            showAlert('입력 오류', '전화번호를 입력해주세요.');
+            return;
+        }
+        setIsPhoneSaving(true);
+        try {
+            // 기존 전체 contact-info를 유지하면서 secretary.phone만 변경
+            const res = await fetch('/api/contact-info');
+            const current = await res.json();
+            const updated = {
+                ...current,
+                secretary: { ...current.secretary, phone: inquiryPhoneInput.trim() },
+            };
+            const saveRes = await fetch('/api/contact-info', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updated),
+            });
+            const result = await saveRes.json();
+            if (result.success) {
+                setInquiryPhone(inquiryPhoneInput.trim());
+                setIsPhoneEditing(false);
+                showAlert('완료', '상회비 문의 전화번호가 저장되었습니다.');
+            } else {
+                showAlert('오류', result.error || '저장에 실패했습니다.');
+            }
+        } catch {
+            showAlert('오류', '저장 중 오류가 발생했습니다.');
+        } finally {
+            setIsPhoneSaving(false);
+        }
+    };
 
     const fetchAccounts = async () => {
         try {
@@ -283,6 +338,73 @@ export default function FeePaymentAdminPage() {
                         </tbody>
                     </table>
                 )}
+            </div>
+
+            {/* 상회비 문의 전화번호 관리 */}
+            <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <div>
+                        <h2 className="text-base font-semibold text-gray-900">상회비 문의</h2>
+                        <p className="text-xs text-gray-500 mt-0.5">모달 하단 "상회비 문의: 노회 서기실" 옆 전화번호</p>
+                    </div>
+                    {!isPhoneEditing && (
+                        <button
+                            onClick={() => { setInquiryPhoneInput(inquiryPhone); setIsPhoneEditing(true); }}
+                            className="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 border border-blue-200 rounded-lg transition-colors"
+                        >
+                            수정
+                        </button>
+                    )}
+                </div>
+                <div className="px-6 py-5">
+                    {isPhoneEditing ? (
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">전화번호</label>
+                                <input
+                                    type="tel"
+                                    value={inquiryPhoneInput}
+                                    onChange={e => setInquiryPhoneInput(e.target.value)}
+                                    placeholder="예: 010-8686-4214"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                                />
+                            </div>
+                            <div className="flex gap-2 mt-5">
+                                <button
+                                    onClick={() => { setIsPhoneEditing(false); setInquiryPhoneInput(inquiryPhone); }}
+                                    className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    onClick={handleSavePhone}
+                                    disabled={isPhoneSaving}
+                                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
+                                >
+                                    {isPhoneSaving ? '저장 중...' : '저장'}
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-3">
+                            <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <div>
+                                <p className="text-xs text-gray-500">현재 전화번호</p>
+                                <p className="text-lg font-mono font-semibold text-gray-900">
+                                    {inquiryPhone || <span className="text-gray-400 text-sm font-normal">설정된 전화번호 없음</span>}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                    <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <p className="text-xs text-gray-500">
+                            미리보기: <span className="text-gray-700 font-medium">상회비 문의: 노회 서기실 </span>
+                            <span className="text-blue-600 font-medium">{inquiryPhoneInput || inquiryPhone || '전화번호'}</span>
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* Add Modal */}
