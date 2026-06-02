@@ -40,6 +40,8 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from '@/components/auth/AuthProvider'
 
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({
     children,
 }: {
