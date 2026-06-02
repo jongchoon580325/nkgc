@@ -104,7 +104,7 @@ export default function FooterContentAdminPage() {
                     <section className="border border-gray-200 rounded-lg p-5 space-y-4">
                         <h2 className="text-lg font-bold text-gray-900">대표자 정보</h2>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">대표자</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">대표자(노회장)</label>
                             <input
                                 type="text"
                                 required

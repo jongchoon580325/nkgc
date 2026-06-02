@@ -1,0 +1,13 @@
+Error: NEXTAUTH_SECRET environment variable is required
+    at 66147 (.next/server/app/api/admin/csv/route.js:1:22509)
+    at c (.next/server/webpack-runtime.js:1:128)
+    at 48095 (.next/server/app/api/admin/csv/route.js:1:7215)
+    at c (.next/server/webpack-runtime.js:1:128)
+    at <unknown> (.next/server/app/api/admin/csv/route.js:1:24971)
+    at c.X (.next/server/webpack-runtime.js:1:1206)
+    at <unknown> (.next/server/app/api/admin/csv/route.js:1:24946)
+    at Object.<anonymous> (.next/server/app/api/admin/csv/route.js:1:25003)
+> Build error occurred
+[Error: Failed to collect page data for /api/admin/csv] {
+  type: 'Error'
+}
