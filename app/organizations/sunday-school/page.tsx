@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
+import { prisma } from '@/lib/prisma'
 import AdminOnly from '@/components/auth/AdminOnly'
-import { promises as fs } from 'fs'
-import path from 'path'
+
+
 import PageHeader from '@/components/common/PageHeader'
 
 interface Officer {
@@ -30,9 +31,10 @@ interface OrganizationData {
 }
 
 async function getOrganizationData(id: string): Promise<OrganizationData | null> {
-    const filePath = path.join(process.cwd(), 'data', 'organizations.json')
-    const fileContents = await fs.readFile(filePath, 'utf8')
-    const data = JSON.parse(fileContents)
+
+
+    const block = await prisma.contentBlock.findUnique({ where: { key: 'organizations' } })
+    const data = (block?.value as unknown as { organizations: OrganizationData[] }) ?? { organizations: [] }
     return data.organizations.find((org: OrganizationData) => org.id === id) || null
 }
 
