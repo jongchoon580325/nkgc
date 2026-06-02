@@ -149,6 +149,17 @@ export default function AdminSidebar() {
             ]
         },
         {
+            name: 'Footer 관리',
+            icon: (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 19h16M4 5h16M4 9h16M4 15h16M8 9v6m8-6v6" />
+                </svg>
+            ),
+            submenu: [
+                { name: '컨텐츠 관리', href: '/admin/footer/content' },
+            ]
+        },
+        {
             name: '시스템 관리',
             icon: (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

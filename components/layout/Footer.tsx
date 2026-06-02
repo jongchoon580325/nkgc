@@ -1,31 +1,14 @@
 import Link from 'next/link'
 import AdminLoginLink from '../auth/AdminLoginLink'
 import { prisma } from '@/lib/prisma'
-
-interface ContactInfo {
-    secretary: {
-        name: string
-        phone: string
-    }
-    president: {
-        name: string
-        phone: string
-    }
-    address: string
-    email: string
-}
+import { ContactInfo, DEFAULT_CONTACT_INFO, normalizeContactInfo } from '@/lib/contact-info'
 
 async function getContactInfo(): Promise<ContactInfo> {
     try {
         const block = await prisma.contentBlock.findUnique({ where: { key: 'contact_info' } })
-        if (block?.value) return block.value as unknown as ContactInfo
+        if (block?.value) return normalizeContactInfo(block.value as unknown as Partial<ContactInfo>)
     } catch { /* fall through to default */ }
-    return {
-        secretary: { name: '문보길 목사', phone: '010-9777-1409' },
-        president: { name: '정영교(노회장)', phone: '010-3705-1950' },
-        address: '경기도 수원시 영통구 영통로 255번길 34 (영통동)',
-        email: 'nkgc1409@daum.net',
-    }
+    return DEFAULT_CONTACT_INFO
 }
 
 export default async function Footer() {
@@ -63,53 +46,63 @@ export default async function Footer() {
                             <h3 className="text-white font-semibold text-lg">
                                 연락처 정보
                             </h3>
-                            <a
-                                href="/admin/contact-info"
-                                className="text-xs text-black hover:text-primary-blue transition-colors"
+                            <Link
+                                href="/admin/footer/content"
+                                className="text-xs text-gray-900 hover:text-primary-blue transition-colors"
                                 title="관리자 전용"
                             >
                                 수정
-                            </a>
+                            </Link>
                         </div>
                         <div className="space-y-2 text-sm">
-                            <p>
-                                <span className="font-medium">노회서기:</span>{' '}
+                            <p className="flex gap-2">
+                                <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-500" aria-hidden="true" />
+                                <span><span className="font-medium">대표자:</span>{' '}
+                                    {contactInfo.president.name}</span>
+                            </p>
+                            <p className="flex gap-2">
+                                <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-500" aria-hidden="true" />
+                                <span><span className="font-medium">대표자 전화:</span>{' '}
+                                    <a
+                                        href={`tel:${contactInfo.president.phone}`}
+                                        className="hover:text-primary-blue transition-colors"
+                                    >
+                                        {contactInfo.president.phone}
+                                    </a>
+                                </span>
+                            </p>
+                            <p className="flex gap-2">
+                                <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-500" aria-hidden="true" />
+                                <span><span className="font-medium">노회 서기:</span>{' '}
                                 {contactInfo.secretary.name}
+                                </span>
                             </p>
-                            <p>
-                                <span className="font-medium">전화:</span>{' '}
-                                <a
-                                    href={`tel:${contactInfo.secretary.phone}`}
-                                    className="hover:text-primary-blue transition-colors"
-                                >
-                                    {contactInfo.secretary.phone}
-                                </a>
+                            <p className="flex gap-2">
+                                <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-500" aria-hidden="true" />
+                                <span><span className="font-medium">서기 전화:</span>{' '}
+                                    <a
+                                        href={`tel:${contactInfo.secretary.phone}`}
+                                        className="hover:text-primary-blue transition-colors"
+                                    >
+                                        {contactInfo.secretary.phone}
+                                    </a>
+                                </span>
                             </p>
-                            <p>
-                                <span className="font-medium">관리자:</span>{' '}
-                                {contactInfo.president.name}
+                            <p className="flex gap-2">
+                                <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-500" aria-hidden="true" />
+                                <span><span className="font-medium">서기 Email:</span>{' '}
+                                    <a
+                                        href={`mailto:${contactInfo.email}`}
+                                        className="hover:text-primary-blue transition-colors"
+                                    >
+                                        {contactInfo.email}
+                                    </a>
+                                </span>
                             </p>
-                            <p>
-                                <span className="font-medium">대표전화:</span>{' '}
-                                <a
-                                    href={`tel:${contactInfo.president.phone}`}
-                                    className="hover:text-primary-blue transition-colors"
-                                >
-                                    {contactInfo.president.phone}
-                                </a>
-                            </p>
-                            <p>
-                                <span className="font-medium">이메일:</span>{' '}
-                                <a
-                                    href={`mailto:${contactInfo.email}`}
-                                    className="hover:text-primary-blue transition-colors"
-                                >
-                                    {contactInfo.email}
-                                </a>
-                            </p>
-                            <p>
-                                <span className="font-medium">주소:</span>{' '}
-                                {contactInfo.address}
+                            <p className="flex gap-2">
+                                <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-500" aria-hidden="true" />
+                                <span><span className="font-medium">사무실 주소:</span>{' '}
+                                    {contactInfo.address}</span>
                             </p>
                         </div>
                     </div>
