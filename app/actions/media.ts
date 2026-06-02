@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { LocalStorageProvider } from '@/lib/services/storage/LocalStorageProvider';
+import { BlobStorageProvider } from '@/lib/services/storage/BlobStorageProvider';
 import { revalidatePath } from 'next/cache';
 
 function isAuthorized(session: any) {
@@ -20,7 +20,7 @@ export async function bulkDeleteAssets(assetIds: string[]) {
             select: { id: true, path: true }
         });
 
-        const storage = new LocalStorageProvider();
+        const storage = new BlobStorageProvider();
 
         // Delete physical files
         await Promise.allSettled(assets.map(a => storage.delete(a.path)));

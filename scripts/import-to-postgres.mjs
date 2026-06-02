@@ -193,11 +193,11 @@ async function importData() {
         });
     }
 
-    // 17. Likes
+    // 17. Likes (@@unique([userId, postId]) 기준으로 upsert)
     console.log('17/17 Likes...');
     for (const r of data.likes) {
         await prisma.like.upsert({
-            where: { id: r.id },
+            where: { userId_postId: { userId: r.userId, postId: r.postId } },
             update: {},
             create: { ...r, createdAt: toDate(r.createdAt) }
         });

@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
-import { promises as fs } from 'fs'
-import path from 'path'
 import AdminOnly from '@/components/auth/AdminOnly'
 import PageHeader from '@/components/common/PageHeader'
+import { prisma } from '@/lib/prisma'
 
 interface PresidentData {
     name: string
@@ -14,9 +13,8 @@ interface PresidentData {
 }
 
 async function getPresidentData(): Promise<PresidentData> {
-    const filePath = path.join(process.cwd(), 'data', 'president.json')
-    const fileContents = await fs.readFile(filePath, 'utf8')
-    return JSON.parse(fileContents)
+    const block = await prisma.contentBlock.findUnique({ where: { key: 'greeting' } })
+    return block?.value as unknown as PresidentData
 }
 
 export const metadata: Metadata = {

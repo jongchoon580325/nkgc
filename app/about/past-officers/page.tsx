@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import AdminOnly from '@/components/auth/AdminOnly'
-import fs from 'fs/promises'
-import path from 'path'
 import PageHeader from '@/components/common/PageHeader'
+import { prisma } from '@/lib/prisma'
 
 interface YearOfficers {
     year: string
@@ -24,9 +23,8 @@ interface PastOfficersData {
 }
 
 async function getPastOfficersData(): Promise<PastOfficersData> {
-    const filePath = path.join(process.cwd(), 'data', 'past-officers.json')
-    const fileContents = await fs.readFile(filePath, 'utf8')
-    return JSON.parse(fileContents)
+    const block = await prisma.contentBlock.findUnique({ where: { key: 'past_officers' } })
+    return block?.value as unknown as PastOfficersData
 }
 
 export const metadata: Metadata = {

@@ -1,0 +1,9 @@
+# DB dumps - security risk, must not be public
+public/db_sql
+
+# Local backup directory
+backup/
+
+# SQLite database file
+prisma/dev.db
+prisma/*.db
