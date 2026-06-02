@@ -4,8 +4,6 @@ import { authOptions } from '@/lib/auth';
 import Papa from 'papaparse';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
-import fs from 'fs/promises';
-import path from 'path';
 
 // CSV Template structures for each target type
 const CSV_TEMPLATES = {
@@ -66,12 +64,10 @@ export async function GET(request: NextRequest) {
         let csvContent = '';
 
         if (target === 'inspections') {
-            // ... (existing inspections logic)
-            const filePath = path.join(process.cwd(), 'data', 'inspections.json');
-            let inspectionsData = [];
+            let inspectionsData: any[] = [];
             try {
-                const fileContent = await fs.readFile(filePath, 'utf8');
-                inspectionsData = JSON.parse(fileContent);
+                const block = await prisma.contentBlock.findUnique({ where: { key: 'inspections' } });
+                if (block?.value) inspectionsData = block.value as unknown as any[];
             } catch (error) {
                 console.error('Failed to read inspections data for template:', error);
             }
@@ -188,11 +184,10 @@ export async function GET(request: NextRequest) {
             }
 
         } else if (target === 'current-officers') {
-            const filePath = path.join(process.cwd(), 'data', 'officers.json');
-            let officersData = { officers: [] };
+            let officersData: { officers: any[] } = { officers: [] };
             try {
-                const fileContent = await fs.readFile(filePath, 'utf8');
-                officersData = JSON.parse(fileContent);
+                const block = await prisma.contentBlock.findUnique({ where: { key: 'officers' } });
+                if (block?.value) officersData = block.value as unknown as { officers: any[] };
             } catch (error) {
                 console.error('Failed to read officers data:', error);
             }
@@ -216,11 +211,10 @@ export async function GET(request: NextRequest) {
             }
 
         } else if (target === 'past-officers') {
-            const filePath = path.join(process.cwd(), 'data', 'past-officers.json');
-            let pastOfficersData = { years: [] };
+            let pastOfficersData: { years: any[] } = { years: [] };
             try {
-                const fileContent = await fs.readFile(filePath, 'utf8');
-                pastOfficersData = JSON.parse(fileContent);
+                const block = await prisma.contentBlock.findUnique({ where: { key: 'past_officers' } });
+                if (block?.value) pastOfficersData = block.value as unknown as { years: any[] };
             } catch (error) {
                 console.error('Failed to read past officers data:', error);
             }
@@ -249,11 +243,10 @@ export async function GET(request: NextRequest) {
             }
 
         } else if (target === 'organizations') {
-            const filePath = path.join(process.cwd(), 'data', 'organizations.json');
-            let orgData = { organizations: [] };
+            let orgData: { organizations: any[] } = { organizations: [] };
             try {
-                const fileContent = await fs.readFile(filePath, 'utf8');
-                orgData = JSON.parse(fileContent);
+                const block = await prisma.contentBlock.findUnique({ where: { key: 'organizations' } });
+                if (block?.value) orgData = block.value as unknown as { organizations: any[] };
             } catch (error) {
                 console.error('Failed to read organizations data:', error);
             }
@@ -521,22 +514,15 @@ async function importCurrentOfficers(data: any[]) {
         photo: row['사진'] || ''
     }));
 
-    // Read existing file to preserve 'term'
-    const filePath = path.join(process.cwd(), 'data', 'officers.json');
-    let existingData = { term: "제 48-49회기", officers: [] };
-    try {
-        const fileContent = await fs.readFile(filePath, 'utf8');
-        existingData = JSON.parse(fileContent);
-    } catch (error) {
-        // File might not exist or be empty, use default
-    }
+    const block = await prisma.contentBlock.findUnique({ where: { key: 'officers' } });
+    const existingData = (block?.value as unknown as { term: string; officers: any[] }) ?? { term: '제 48-49회기', officers: [] };
+    const newData = { ...existingData, officers };
 
-    const newData = {
-        ...existingData,
-        officers: officers
-    };
-
-    await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
+    await prisma.contentBlock.upsert({
+        where:  { key: 'officers' },
+        update: { value: newData },
+        create: { key: 'officers', value: newData },
+    });
 }
 
 async function importPastOfficers(data: any[]) {
@@ -544,23 +530,22 @@ async function importPastOfficers(data: any[]) {
         year: row['연도'] || '',
         church: row['교회명'] || '',
         officers: {
-            "노회장": row['노회장'] || '',
-            "부노회장": row['부노회장'] || '',
-            "서기": row['서기'] || '',
-            "부서기": row['부서기'] || '',
-            "회록서기": row['회록서기'] || '',
-            "부회록서기": row['부회록서기'] || '',
-            "회계": row['회계'] || '',
-            "부회계": row['부회계'] || ''
-        }
+            '노회장': row['노회장'] || '',
+            '부노회장': row['부노회장'] || '',
+            '서기': row['서기'] || '',
+            '부서기': row['부서기'] || '',
+            '회록서기': row['회록서기'] || '',
+            '부회록서기': row['부회록서기'] || '',
+            '회계': row['회계'] || '',
+            '부회계': row['부회계'] || '',
+        },
     }));
 
-    const newData = {
-        years: years
-    };
-
-    const filePath = path.join(process.cwd(), 'data', 'past-officers.json');
-    await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
+    await prisma.contentBlock.upsert({
+        where:  { key: 'past_officers' },
+        update: { value: { years } },
+        create: { key: 'past_officers', value: { years } },
+    });
 }
 
 async function importInspections(data: any[]) {
@@ -603,8 +588,11 @@ async function importInspections(data: any[]) {
     });
 
     const newData = Array.from(inspectionsMap.values());
-    const filePath = path.join(process.cwd(), 'data', 'inspections.json');
-    await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
+    await prisma.contentBlock.upsert({
+        where:  { key: 'inspections' },
+        update: { value: newData },
+        create: { key: 'inspections', value: newData },
+    });
 }
 
 async function importOrganizations(data: any[]) {
@@ -653,10 +641,10 @@ async function importOrganizations(data: any[]) {
         }
     });
 
-    const newData = {
-        organizations: Array.from(orgsMap.values())
-    };
-
-    const filePath = path.join(process.cwd(), 'data', 'organizations.json');
-    await fs.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
+    const newData = { organizations: Array.from(orgsMap.values()) };
+    await prisma.contentBlock.upsert({
+        where:  { key: 'organizations' },
+        update: { value: newData },
+        create: { key: 'organizations', value: newData },
+    });
 }
