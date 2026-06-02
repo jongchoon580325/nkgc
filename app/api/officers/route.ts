@@ -1,40 +1,29 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs/promises'
-import path from 'path'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
     try {
-        const filePath = path.join(process.cwd(), 'data', 'officers.json')
-        const fileContents = await fs.readFile(filePath, 'utf8')
-        const data = JSON.parse(fileContents)
-        return NextResponse.json(data)
+        const block = await prisma.contentBlock.findUnique({ where: { key: 'officers' } })
+        if (!block) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        return NextResponse.json(block.value)
     } catch (error) {
-        return NextResponse.json(
-            { error: 'Failed to read officers data' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Failed to read officers data' }, { status: 500 })
     }
 }
 
 export async function POST(request: Request) {
     try {
         const body = await request.json()
-        const filePath = path.join(process.cwd(), 'data', 'officers.json')
-
-        // Validate required fields
         if (!body.term || !Array.isArray(body.officers)) {
-            return NextResponse.json(
-                { error: 'Missing required fields' },
-                { status: 400 }
-            )
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
         }
-
-        await fs.writeFile(filePath, JSON.stringify(body, null, 2), 'utf8')
+        await prisma.contentBlock.upsert({
+            where:  { key: 'officers' },
+            update: { value: body },
+            create: { key: 'officers', value: body },
+        })
         return NextResponse.json({ success: true, data: body })
     } catch (error) {
-        return NextResponse.json(
-            { error: 'Failed to update officers data' },
-            { status: 500 }
-        )
+        return NextResponse.json({ error: 'Failed to update officers data' }, { status: 500 })
     }
 }

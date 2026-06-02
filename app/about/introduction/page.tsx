@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import AdminOnly from '@/components/auth/AdminOnly'
-import fs from 'fs/promises'
-import path from 'path'
 import PageHeader from '@/components/common/PageHeader'
+import { prisma } from '@/lib/prisma'
 import Image from 'next/image'
 
 interface Section {
@@ -20,9 +19,8 @@ interface IntroductionData {
 }
 
 async function getIntroductionData(): Promise<IntroductionData> {
-    const filePath = path.join(process.cwd(), 'data', 'introduction.json')
-    const fileContents = await fs.readFile(filePath, 'utf8')
-    return JSON.parse(fileContents)
+    const block = await prisma.contentBlock.findUnique({ where: { key: 'introduction' } })
+    return block?.value as unknown as IntroductionData
 }
 
 export const metadata: Metadata = {

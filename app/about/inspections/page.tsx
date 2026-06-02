@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import AdminOnly from '@/components/auth/AdminOnly'
-import fs from 'fs/promises'
-import path from 'path'
 import InspectionsClient from './InspectionsClient'
 import PageHeader from '@/components/common/PageHeader'
+import { prisma } from '@/lib/prisma'
 
 export interface PersonInfo {
     name: string
@@ -29,9 +28,8 @@ export interface InspectionData {
 }
 
 async function getInspectionsData(): Promise<InspectionData[]> {
-    const filePath = path.join(process.cwd(), 'data', 'inspections.json')
-    const fileContents = await fs.readFile(filePath, 'utf8')
-    return JSON.parse(fileContents)
+    const block = await prisma.contentBlock.findUnique({ where: { key: 'inspections' } })
+    return block?.value as unknown as InspectionData[]
 }
 
 export const metadata: Metadata = {

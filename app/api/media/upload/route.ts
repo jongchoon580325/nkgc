@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LocalStorageProvider } from '@/lib/services/storage/LocalStorageProvider';
+import { BlobStorageProvider } from '@/lib/services/storage/BlobStorageProvider';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
-// Max file size 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
@@ -22,49 +21,41 @@ export async function POST(req: NextRequest) {
 
         const buffer = Buffer.from(await file.arrayBuffer());
 
-        // De-duplication Check
         const hash = crypto.createHash('sha256').update(buffer).digest('hex');
         const existing = await prisma.fileAsset.findUnique({ where: { hash } });
 
-        // If exact file exists, return it
         if (existing) {
             return NextResponse.json({
                 message: "File exists",
                 success: true,
                 asset: existing,
-                fileUrl: existing.path
+                fileUrl: existing.path,
             });
         }
 
-        // Storage
-        // Use a safe name to prevent issues, but try to keep original name part
         const sanitizedOriginalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
         const safeName = `${crypto.randomUUID().slice(0, 8)}-${sanitizedOriginalName}`;
 
-        const storage = new LocalStorageProvider();
-
-        // upload returns public URL path (e.g. /uploads/2024/12/abc.webp)
+        const storage = new BlobStorageProvider();
         const publicPath = await storage.upload(buffer, safeName, file.type);
 
-        // Database Record
         const newAsset = await prisma.fileAsset.create({
             data: {
                 filename: file.name,
                 storedName: safeName,
-                mimeType: file.type.startsWith('image/') ? 'image/webp' : file.type, // Sharp converts to webp in Provider
+                mimeType: file.type,
                 size: buffer.length,
                 path: publicPath,
-                provider: 'local',
-                hash: hash,
+                provider: 'blob',
+                hash,
                 folderId: folderId || null,
-                // uploadedBy // TODO: Add session user ID when auth is fully integrated
-            }
+            },
         });
 
         return NextResponse.json({
             success: true,
             asset: newAsset,
-            fileUrl: newAsset.path
+            fileUrl: newAsset.path,
         }, { status: 201 });
 
     } catch (error) {

@@ -46,3 +46,9 @@ next-env.d.ts
 
 # uploads
 /public/uploads
+
+# local backups (Phase 0 - not for repo)
+/backup/
+
+# debug logs
+consol.log

@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import AdminLoginLink from '../auth/AdminLoginLink'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { prisma } from '@/lib/prisma'
 
 interface ContactInfo {
     secretary: {
@@ -18,17 +17,14 @@ interface ContactInfo {
 
 async function getContactInfo(): Promise<ContactInfo> {
     try {
-        const filePath = path.join(process.cwd(), 'data', 'contact-info.json')
-        const fileContents = await fs.readFile(filePath, 'utf8')
-        return JSON.parse(fileContents)
-    } catch (error) {
-        // Return default data if file doesn't exist
-        return {
-            secretary: { name: '문보길 목사', phone: '010-9777-1409' },
-            president: { name: '정영교(노회장)', phone: '010-3705-1950' },
-            address: '경기도 수원시 영통구 영통로 255번길 34 (영통동)',
-            email: 'nkgc1409@daum.net',
-        }
+        const block = await prisma.contentBlock.findUnique({ where: { key: 'contact_info' } })
+        if (block?.value) return block.value as unknown as ContactInfo
+    } catch { /* fall through to default */ }
+    return {
+        secretary: { name: '문보길 목사', phone: '010-9777-1409' },
+        president: { name: '정영교(노회장)', phone: '010-3705-1950' },
+        address: '경기도 수원시 영통구 영통로 255번길 34 (영통동)',
+        email: 'nkgc1409@daum.net',
     }
 }
 

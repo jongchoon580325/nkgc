@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { LocalStorageProvider } from '@/lib/services/storage/LocalStorageProvider';
+import { BlobStorageProvider } from '@/lib/services/storage/BlobStorageProvider';
 
 function isAuthorized(session: any) {
     return session?.user && ['admin', 'super_admin'].includes(session.user.role);
@@ -118,7 +118,7 @@ export async function deleteFolders(folderIds: string[]) {
         });
 
         // 3. Delete physical files
-        const storage = new LocalStorageProvider();
+        const storage = new BlobStorageProvider();
         await Promise.allSettled(assetsToDelete.map((a: any) => storage.delete(a.path)));
 
         // 4. Delete Folders (Cascade will handle DB assets and subfolders automatically if set up, 
