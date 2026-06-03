@@ -57,7 +57,7 @@ export default async function Footer() {
                         <div className="space-y-2 text-sm">
                             <p className="flex gap-2">
                                 <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-500" aria-hidden="true" />
-                                <span><span className="font-medium">대표자:</span>{' '}
+                                <span><span className="font-medium">대표자(노회장):</span>{' '}
                                     {contactInfo.president.name}</span>
                             </p>
                             <p className="flex gap-2">

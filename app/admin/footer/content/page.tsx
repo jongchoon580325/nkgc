@@ -199,7 +199,7 @@ export default function FooterContentAdminPage() {
                 <section className="border border-gray-200 rounded-lg p-5">
                     <h2 className="text-lg font-bold text-gray-900 mb-4">Footer 표시 미리보기</h2>
                     <div className="bg-gray-900 text-gray-300 rounded-lg p-5 text-sm space-y-2">
-                        <p className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-500" /><span><span className="font-medium">대표자:</span> {data.president.name}</span></p>
+                        <p className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-500" /><span><span className="font-medium">대표자(노회장):</span> {data.president.name}</span></p>
                         <p className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-500" /><span><span className="font-medium">대표자 전화:</span> {data.president.phone}</span></p>
                         <p className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-500" /><span><span className="font-medium">노회 서기:</span> {data.secretary.name}</span></p>
                         <p className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-500" /><span><span className="font-medium">서기 전화:</span> {data.secretary.phone}</span></p>
