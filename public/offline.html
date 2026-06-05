@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오프라인 — 남경기노회</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #1a3a5c;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+      max-width: 400px;
+    }
+    .icon { font-size: 4rem; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; }
+    p { font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 1.5rem; }
+    button {
+      background: #1a3a5c;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    button:hover { background: #2a5080; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <h1>인터넷에 연결되어 있지 않습니다</h1>
+    <p>남경기노회 웹사이트를 이용하려면 네트워크 연결이 필요합니다.<br />연결 상태를 확인한 후 다시 시도해 주세요.</p>
+    <button onclick="window.location.reload()">다시 시도</button>
+  </div>
+</body>
+</html>

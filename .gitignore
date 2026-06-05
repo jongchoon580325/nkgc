@@ -53,3 +53,10 @@ next-env.d.ts
 # debug logs
 consol.log
 .env*
+
+# PWA auto-generated files
+public/sw.js
+public/workbox-*.js
+public/sw.js.map
+public/workbox-*.js.map
+public/swe-worker-*.js

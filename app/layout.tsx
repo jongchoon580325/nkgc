@@ -5,6 +5,8 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import ScrollToTop from '@/components/common/ScrollToTop'
 import PopupOverlay from '@/components/common/PopupOverlay'
+import PWAUpdateToast from '@/components/common/PWAUpdateToast'
+import SWDevCleaner from '@/components/common/SWDevCleaner'
 
 const notoSansKr = Noto_Sans_KR({
     subsets: ['latin'],
@@ -26,6 +28,12 @@ export const metadata: Metadata = {
         '남경기',
     ],
     authors: [{ name: '남경기노회' }],
+    manifest: '/manifest.json',
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: 'default',
+        title: '남경기노회',
+    },
     openGraph: {
         title: '대한예수교 장로회 남경기노회',
         description:
@@ -35,6 +43,7 @@ export const metadata: Metadata = {
     },
     icons: {
         icon: '/images/logo.ico',
+        apple: '/icons/icon-192.png',
     },
 }
 
@@ -56,6 +65,8 @@ export default function RootLayout({
                     {children}
                     <Footer />
                     <ScrollToTop />
+                    <PWAUpdateToast />
+                    {process.env.NODE_ENV === 'development' && <SWDevCleaner />}
                 </AuthProvider>
             </body>
         </html>
