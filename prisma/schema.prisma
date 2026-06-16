@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,52 +9,42 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  
-  // 기본 정보
-  username      String    @unique
-  password      String
-  name          String
-  email         String?   @unique
-  phone         String
-  
-  // 교회 정보
-  churchName    String    @map("church_name")
-  position      String    // 목사, 장로, 전도사, 교인
-  category      String?   // 원로, 시무, 부목사, 전도사, 장로, 은퇴, 무임, 선교사, 기타
-  role          String    @default("pending") // admin, pastor, elder, evangelist, member, pending
-  
-  // 승인 관련
-  isApproved    Boolean   @default(false) @map("is_approved")
-  approvedBy    Int?      @map("approved_by")
-  approvedAt    DateTime? @map("approved_at")
-  rejectedReason String?  @map("rejected_reason")
-  rejectedAt    DateTime? @map("rejected_at")
-  
-  // 기타
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-  lastLoginAt   DateTime? @map("last_login_at")
-
-  // 게시판 관계
-  posts         Post[]
-  comments      Comment[]
-  likes         Like[]
+  id             Int       @id @default(autoincrement())
+  username       String    @unique
+  password       String
+  name           String
+  email          String?   @unique
+  phone          String
+  churchName     String    @map("church_name")
+  position       String
+  category       String?
+  role           String    @default("pending")
+  isApproved     Boolean   @default(false) @map("is_approved")
+  approvedBy     Int?      @map("approved_by")
+  approvedAt     DateTime? @map("approved_at")
+  rejectedReason String?   @map("rejected_reason")
+  rejectedAt     DateTime? @map("rejected_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  lastLoginAt    DateTime? @map("last_login_at")
+  comments       Comment[]
+  likes          Like[]
+  posts          Post[]
 
   @@map("users")
 }
 
 model StandingCommittee {
   id            Int      @id @default(autoincrement())
-  name          String   // Committee name (e.g., "공천부")
-  headTitle     String   @map("head_title") // Head title (e.g., "부장", "위원장", "국장")
-  head          String   // Head name
-  headRole      String   @map("head_role") // Head role (목사/장로)
-  secretary     String   // Secretary name
-  secretaryRole String   @map("secretary_role") // Secretary role (목사/장로)
-  members       String   // Comma-separated member names
-  term          String   // Term (e.g., "48회기 – 49회기 (2025년-2026년)")
-  displayOrder  Int      @map("display_order") // Order for display
+  name          String
+  headTitle     String   @map("head_title")
+  head          String
+  headRole      String   @map("head_role")
+  secretary     String
+  secretaryRole String   @map("secretary_role")
+  members       String
+  term          String
+  displayOrder  Int      @map("display_order")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -91,7 +78,7 @@ model SeparateRegistry {
 
 model Rule {
   id        Int      @id @default(autoincrement())
-  type      String   @unique // 'PRESBYTERY' | 'COURTESY'
+  type      String   @unique
   content   String
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -100,12 +87,12 @@ model Rule {
 
 model Resolution {
   id           Int      @id @default(autoincrement())
-  tabType      String   @map("tab_type") // '1-20', '21-40', '41-60', '61-80'
-  meetingNum   Int      @map("meeting_num") // 정기회의 회기
-  sessionNum   Int?     @map("session_num") // 임시회의 회기 (임시인 경우에만)
-  meetingType  String   @default("정기") @map("meeting_type") // '정기' | '임시'
+  tabType      String   @map("tab_type")
+  meetingNum   Int      @map("meeting_num")
+  sessionNum   Int?     @map("session_num")
+  meetingType  String   @default("정기") @map("meeting_type")
   title        String
-  fileType     String   @map("file_type") // 'IMAGE' | 'PDF'
+  fileType     String   @map("file_type")
   fileName     String   @map("file_name")
   fileUrl      String   @map("file_url")
   displayOrder Int      @default(0) @map("display_order")
@@ -116,45 +103,34 @@ model Resolution {
 }
 
 model FeeStatus {
-  id          Int      @id @default(autoincrement())
-  inspection  String
-  churchName  String   @map("church_name")
-  pastorName  String   @map("pastor_name")
-  monthlyFee  Int      @map("monthly_fee")
-  annualFee   Int      @map("annual_fee")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id         Int      @id @default(autoincrement())
+  inspection String
+  churchName String   @map("church_name")
+  pastorName String   @map("pastor_name")
+  monthlyFee Int      @map("monthly_fee")
+  annualFee  Int      @map("annual_fee")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map("fee_statuses")
 }
 
-// --- 게시판 통합 관련 스키마 ---
-
-// --- 게시판 통합 관련 스키마 ---
-
-// SQLite는 Enum을 지원하지 않으므로 String으로 처리하고 애플리케이션 레벨에서 관리
-// BoardType: NOTICE, FREE, MEMBER, FORM_ADMIN, FORM_SELF, EXAM_DEPT, EXAM_USER, GALLERY, VIDEO, MEETING_MINUTES
-
 model Post {
-  id          Int       @id @default(autoincrement())
-  boardType   String    @map("board_type") // Enum 대신 String 사용
+  id          Int          @id @default(autoincrement())
+  boardType   String       @map("board_type")
   title       String
-  content     String    // SQLite에서는 String이 TEXT로 처리됨
-  
-  author      User      @relation(fields: [authorId], references: [id])
-  authorId    Int       @map("author_id")
-  authorName  String?   @map("author_name") // 표시용 작성자 이름
-  
-  viewCount   Int       @default(0) @map("view_count")
-  isNotice    Boolean   @default(false) @map("is_notice")
-  category    String?   @map("category")
-  
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  
+  content     String
+  authorId    Int          @map("author_id")
+  authorName  String?      @map("author_name")
+  viewCount   Int          @default(0) @map("view_count")
+  isNotice    Boolean      @default(false) @map("is_notice")
+  category    String?      @map("category")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  attachments Attachment[]
   comments    Comment[]
   likes       Like[]
-  attachments Attachment[]
+  author      User         @relation(fields: [authorId], references: [id])
 
   @@map("posts")
 }
@@ -162,29 +138,23 @@ model Post {
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
-  
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int      @map("post_id")
-  
-  author    User     @relation(fields: [authorId], references: [id])
   authorId  Int      @map("author_id")
-  
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("comments")
 }
 
 model Like {
   id        Int      @id @default(autoincrement())
-  
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int      @map("post_id")
-  
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int      @map("user_id")
-  
   createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, postId])
   @@map("likes")
@@ -192,16 +162,13 @@ model Like {
 
 model Attachment {
   id        Int      @id @default(autoincrement())
-  
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int      @map("post_id")
-  
   fileName  String   @map("file_name")
   fileUrl   String   @map("file_url")
   fileSize  Int      @map("file_size")
   mimeType  String?  @map("mime_type")
-  
   createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("attachments")
 }
@@ -209,10 +176,9 @@ model Attachment {
 model Popup {
   id          Int      @id @default(autoincrement())
   title       String
-  contentHtml String?  @map("content_html") // Text type is implicit in Prisma for String? unless specific MySQL/Postgres types needed. For SQLite/generic, String is fine.
+  contentHtml String?  @map("content_html")
   imageUrl    String?  @map("image_url")
   linkUrl     String?  @map("link_url")
-  
   startAt     DateTime @map("start_at")
   endAt       DateTime @map("end_at")
   isActive    Boolean  @default(true) @map("is_active")
@@ -221,63 +187,52 @@ model Popup {
   height      Int?     @default(500)
   positionX   Int?     @map("position_x")
   positionY   Int?     @map("position_y")
-  
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("popups")
 }
 
-// --- 게시판 설정 모델 ---
-
 model BoardSettings {
-  id          Int      @id @default(autoincrement())
-  boardType   String   @unique @map("board_type") // FORM_ADMIN, GALLERY, etc.
-  categories  String   @default("[]") // JSON array of category names
-  settings    String?  // JSON for additional settings
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id         Int      @id @default(autoincrement())
+  boardType  String   @unique @map("board_type")
+  categories String   @default("[]")
+  settings   String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map("board_settings")
 }
 
-// --- 히어로 섹션 프리셋 관리 ---
-
 model HeroConfig {
   id                    Int      @id @default(autoincrement())
-  name                  String   // 프리셋 이름 (예: "크리스마스 특집")
-  isActive              Boolean  @default(false) @map("is_active") // 현재 활성화 여부
-  
-  // 배경 설정
-  backgroundImage       String?  @map("background_image") // PC용 배경 이미지 URL
-  backgroundImageMobile String?  @map("background_image_mobile") // 모바일용 배경 이미지
-  animationType         String   @default("static") @map("animation_type") // static, kenburns, wave, pulse, pan
-  animationSpeed        String   @default("normal") @map("animation_speed") // slow, normal, fast
-  
-  // 텍스트 콘텐츠 (옵션)
-  hideText              Boolean  @default(false) @map("hide_text") // 텍스트 숨기기 (배경만 표시)
-  titleText             String?  @map("title_text") // H1 (기본: "Coram Deo")
-  subtitleText          String?  @map("subtitle_text") // H3 (기본: "대한예수교...")
-  motto1                String?  // 모토 1
-  motto2                String?  // 모토 2
-  motto3                String?  // 모토 3
-  descriptionText       String?  @map("description_text") // Normal 텍스트
-  
+  name                  String
+  isActive              Boolean  @default(false) @map("is_active")
+  backgroundImage       String?  @map("background_image")
+  backgroundImageMobile String?  @map("background_image_mobile")
+  animationType         String   @default("static") @map("animation_type")
+  animationSpeed        String   @default("normal") @map("animation_speed")
+  hideText              Boolean  @default(false) @map("hide_text")
+  titleText             String?  @map("title_text")
+  subtitleText          String?  @map("subtitle_text")
+  motto1                String?
+  motto2                String?
+  motto3                String?
+  descriptionText       String?  @map("description_text")
   createdAt             DateTime @default(now()) @map("created_at")
   updatedAt             DateTime @updatedAt @map("updated_at")
-  
+  backgroundVideo       String?  @map("background_video")
+
   @@index([isActive])
   @@map("hero_configs")
 }
 
-// --- 상회비 납부 계좌 관리 ---
-
 model FeePaymentAccount {
   id            Int      @id @default(autoincrement())
-  title         String                    // 계좌 명칭 (예: 노회 상회비)
-  bank          String                    // 은행명
-  accountNumber String   @map("account_number") // 계좌번호
-  accountHolder String   @map("account_holder")  // 예금주
+  title         String
+  bank          String
+  accountNumber String   @map("account_number")
+  accountHolder String   @map("account_holder")
   displayOrder  Int      @default(0) @map("display_order")
   isActive      Boolean  @default(true) @map("is_active")
   createdAt     DateTime @default(now()) @map("created_at")
@@ -286,57 +241,39 @@ model FeePaymentAccount {
   @@map("fee_payment_accounts")
 }
 
-// --- IMMS (통합 미디어 관리 시스템) ---
-
 model MediaFolder {
-  id        String   @id @default(uuid())
+  id        String        @id @default(uuid())
   name      String
-  
-  // Hierarchy
-  parentId  String?  @map("parent_id")
+  parentId  String?       @map("parent_id")
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+  assets    FileAsset[]
   parent    MediaFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children  MediaFolder[] @relation("FolderHierarchy")
-
-  // Content
-  assets    FileAsset[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([name, parentId])
   @@map("media_folders")
 }
 
 model FileAsset {
-  id          String   @id @default(uuid())
-  
-  // Metadata
+  id          String       @id @default(uuid())
   filename    String
-  storedName  String   @unique @map("stored_name")
-  mimeType    String   @map("mime_type")
+  storedName  String       @unique @map("stored_name")
+  mimeType    String       @map("mime_type")
   size        Int
-  
-  // Image Specifics
   width       Int?
   height      Int?
-
-  // New Metadata Fields (Phase 3.5)
-  altText     String?  @map("alt_text") // 대체 텍스트 (접근성)
-  caption     String?  // 캡션 (이미지 하단 설명)
-  description String?  // 상세 설명 (관리자용 메모)
-  
-  // Storage Context
+  altText     String?      @map("alt_text")
+  caption     String?
+  description String?
   path        String
-  provider    String   // 'local', 's3', 'r2'
-  hash        String?  @unique // SHA-256
-  
-  // Organization
-  folderId    String?  @map("folder_id")
-  folder      MediaFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
-  
-  uploadedBy   Int?     @map("uploaded_by")
-  uploadedAt   DateTime @default(now()) @map("uploaded_at")
-  
+  provider    String
+  hash        String?      @unique
+  folderId    String?      @map("folder_id")
+  uploadedBy  Int?         @map("uploaded_by")
+  uploadedAt  DateTime     @default(now()) @map("uploaded_at")
+  folder      MediaFolder? @relation(fields: [folderId], references: [id])
+
   @@index([mimeType])
   @@index([uploadedAt])
   @@map("file_assets")

@@ -23,6 +23,7 @@ export async function PATCH(
                 name: data.name,
                 backgroundImage: data.backgroundImage || null,
                 backgroundImageMobile: data.backgroundImageMobile || null,
+                backgroundVideo: data.backgroundVideo || null,
                 animationType: data.animationType,
                 animationSpeed: data.animationSpeed || 'normal',
                 hideText: data.hideText ?? false,

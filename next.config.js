@@ -6,6 +6,13 @@ const nextConfig = {
         formats: ['image/webp', 'image/avif'],
         deviceSizes: [640, 750, 828, 1080, 1200, 1920],
         imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+        // Vercel Blob 공개 스토리지 — 서브도메인이 프로젝트마다 다르므로 와일드카드 사용
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '*.public.blob.vercel-storage.com',
+            },
+        ],
     },
     reactStrictMode: true,
     webpack: (config) => {
@@ -30,6 +37,11 @@ module.exports = withPWA({
             },
             {
                 urlPattern: /^\/login$/,
+                handler: 'NetworkOnly',
+            },
+            {
+                // 관리자 API는 캐시 제외 — 설정 변경이 즉시 반영되어야 함
+                urlPattern: /^\/api\/admin\//,
                 handler: 'NetworkOnly',
             },
             {

@@ -28,7 +28,7 @@ interface BoardSettings {
 }
 
 export default function ResolutionsPage() {
-    const [activeTab, setActiveTab] = useState<'1-20' | '21-40' | '41-60' | '61-80'>('1-20')
+    const [activeTab, setActiveTab] = useState<'1-20' | '21-40' | '41-60' | '61-80' | '81-100'>('1-20')
     const [resolutions, setResolutions] = useState<Resolution[]>([])
     const [isLoading, setIsLoading] = useState(false)
 
@@ -113,7 +113,8 @@ export default function ResolutionsPage() {
         { key: '1-20' as const, label: '제1회 ~ 제20회' },
         { key: '21-40' as const, label: '제21회 ~ 제40회' },
         { key: '41-60' as const, label: '제41회 ~ 제60회' },
-        { key: '61-80' as const, label: '제61회 ~ 제80회' }
+        { key: '61-80' as const, label: '제61회 ~ 제80회' },
+        { key: '81-100' as const, label: '제81회 ~ 제100회' }
     ]
 
     return (

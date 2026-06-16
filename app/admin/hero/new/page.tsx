@@ -7,6 +7,7 @@ interface HeroFormData {
     name: string;
     backgroundImage: string;
     backgroundImageMobile: string;
+    backgroundVideo: string;
     animationType: string;
     animationSpeed: string;
     hideText: boolean;

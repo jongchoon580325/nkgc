@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
                 name: data.name,
                 backgroundImage: data.backgroundImage || null,
                 backgroundImageMobile: data.backgroundImageMobile || null,
+                backgroundVideo: data.backgroundVideo || null,
                 animationType: data.animationType || 'static',
                 animationSpeed: data.animationSpeed || 'normal',
                 hideText: data.hideText || false,

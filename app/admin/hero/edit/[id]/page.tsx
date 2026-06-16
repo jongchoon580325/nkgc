@@ -8,6 +8,7 @@ interface HeroFormData {
     name: string;
     backgroundImage: string;
     backgroundImageMobile: string;
+    backgroundVideo: string;
     animationType: string;
     animationSpeed: string;
     hideText: boolean;
@@ -117,6 +118,7 @@ export default function EditHeroPresetPage() {
                     name: config.name,
                     backgroundImage: config.backgroundImage || '',
                     backgroundImageMobile: config.backgroundImageMobile || '',
+                    backgroundVideo: config.backgroundVideo || '',
                     animationType: config.animationType || 'static',
                     animationSpeed: config.animationSpeed || 'normal',
                     hideText: config.hideText || false,

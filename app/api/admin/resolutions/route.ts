@@ -8,9 +8,10 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'
 
 function blobPath(tabType: string, fileName: string) {
     const tabFolder =
-        tabType === '1-20'  ? 'tab1' :
-        tabType === '21-40' ? 'tab2' :
-        tabType === '41-60' ? 'tab3' : 'tab4'
+        tabType === '1-20'   ? 'tab1' :
+        tabType === '21-40'  ? 'tab2' :
+        tabType === '41-60'  ? 'tab3' :
+        tabType === '61-80'  ? 'tab4' : 'tab5'
     return `resolutions/${tabFolder}/${fileName}`
 }
 
@@ -108,6 +109,36 @@ export async function PUT(request: NextRequest) {
     } catch (error) {
         console.error('결의서 수정 오류:', error)
         return NextResponse.json({ success: false, error: '수정 중 오류가 발생했습니다.' }, { status: 500 })
+    }
+}
+
+// PATCH: 결의서 순서 일괄 저장 (D&D 드롭 완료 시 호출)
+// body: { orders: [{ id: number, displayOrder: number }, ...] }
+export async function PATCH(request: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session || !['admin', 'super_admin', 'ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
+            return NextResponse.json({ success: false, error: '권한이 없습니다.' }, { status: 403 })
+        }
+
+        const body = await request.json()
+        const orders: { id: number; displayOrder: number }[] = body.orders
+
+        if (!Array.isArray(orders) || orders.length === 0) {
+            return NextResponse.json({ success: false, error: '순서 데이터가 없습니다.' }, { status: 400 })
+        }
+
+        // 트랜잭션으로 전체 순서를 원자적으로 업데이트
+        await prisma.$transaction(
+            orders.map(({ id, displayOrder }) =>
+                prisma.resolution.update({ where: { id }, data: { displayOrder } })
+            )
+        )
+
+        return NextResponse.json({ success: true })
+    } catch (error) {
+        console.error('결의서 순서 저장 오류:', error)
+        return NextResponse.json({ success: false, error: '순서 저장 중 오류가 발생했습니다.' }, { status: 500 })
     }
 }
 

@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
             const resolutions = await prisma.resolution.findMany({
                 where: { tabType: tab },
                 orderBy: [
+                    { displayOrder: 'asc' },
                     { meetingNum: 'asc' }
                 ]
             })
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest) {
         const resolutions = await prisma.resolution.findMany({
             orderBy: [
                 { tabType: 'asc' },
+                { displayOrder: 'asc' },
                 { meetingNum: 'asc' }
             ]
         })

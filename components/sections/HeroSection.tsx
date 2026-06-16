@@ -3,12 +3,22 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+function getYouTubeId(url: string): string | null {
+    const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([^&\n?#]{11})/);
+    return m ? m[1] : null;
+}
+
+function buildYouTubeEmbed(id: string): string {
+    return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&rel=0&modestbranding=1&playsinline=1`;
+}
+
 interface HeroConfig {
     id: number;
     name: string;
     isActive: boolean;
     backgroundImage: string | null;
     backgroundImageMobile: string | null;
+    backgroundVideo: string | null;
     animationType: string;
     animationSpeed: string;
     hideText: boolean;
@@ -61,8 +71,9 @@ export default function HeroSection() {
     // 텍스트 표시 여부
     const showText = !config?.hideText;
 
-    // 배경 이미지와 애니메이션 클래스 결정
-    const hasCustomBackground = config?.backgroundImage;
+    // 배경 우선순위: 동영상 > 이미지 > 기본
+    const hasVideo = !!config?.backgroundVideo;
+    const hasCustomBackground = !hasVideo && !!config?.backgroundImage;
     const animationClass = hasCustomBackground
         ? ANIMATION_CLASSES[config?.animationType || 'static'] || ''
         : '';
@@ -101,7 +112,36 @@ export default function HeroSection() {
             </svg>
 
             {/* Background Layer */}
-            {hasCustomBackground ? (
+            {hasVideo ? (() => {
+                const videoUrl = config!.backgroundVideo!;
+                const ytId = getYouTubeId(videoUrl);
+                return (
+                <div className="absolute inset-0 overflow-hidden">
+                    {ytId ? (
+                        <iframe
+                            src={buildYouTubeEmbed(ytId)}
+                            allow="autoplay; encrypted-media"
+                            style={{
+                                position: 'absolute',
+                                top: '50%', left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                minWidth: '100%', minHeight: '100%',
+                                width: '177.78vh', height: '56.25vw',
+                                border: 'none', pointerEvents: 'none',
+                            }}
+                        />
+                    ) : (
+                        <video
+                            autoPlay loop muted playsInline
+                            src={videoUrl}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            style={{ pointerEvents: 'none' }}
+                        />
+                    )}
+                    <div className="absolute inset-0 hero-overlay" />
+                </div>
+                );
+            })() : hasCustomBackground ? (
                 /* Custom Background Image with Animation */
                 <div className="absolute inset-0">
                     <div

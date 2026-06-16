@@ -19,9 +19,11 @@ interface PDFFlipViewerProps {
 
 export default function PDFFlipViewer({ fileUrl, title, onClose }: PDFFlipViewerProps) {
     const [numPages, setNumPages] = useState<number>(0);
+    const [currentPage, setCurrentPage] = useState<number>(0);
     const [width, setWidth] = useState(400); // Base width calculated from viewport
     const [scale, setScale] = useState(1);   // Zoom level
     const containerRef = useRef<HTMLDivElement>(null);
+    const flipBookRef = useRef<any>(null);
 
     useEffect(() => {
         // 클라이언트 사이드에서만 워커 설정
@@ -35,9 +37,28 @@ export default function PDFFlipViewer({ fileUrl, title, onClose }: PDFFlipViewer
         }
     }, []);
 
+    // 키보드 ← → ESC 지원
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            } else if (e.key === 'ArrowLeft') {
+                flipBookRef.current?.pageFlip()?.flipPrev();
+            } else if (e.key === 'ArrowRight') {
+                flipBookRef.current?.pageFlip()?.flipNext();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
+
     function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
         setNumPages(numPages);
     }
+
+    const onPageChange = (e: any) => {
+        setCurrentPage(e.data);
+    };
 
     // 반응형 크기 조절
     useEffect(() => {
@@ -112,6 +133,7 @@ export default function PDFFlipViewer({ fileUrl, title, onClose }: PDFFlipViewer
                     {numPages > 0 && (
                         // @ts-expect-error
                         <HTMLFlipBook
+                            ref={flipBookRef}
                             width={currentWidth}
                             height={currentHeight}
                             size="fixed"
@@ -122,6 +144,7 @@ export default function PDFFlipViewer({ fileUrl, title, onClose }: PDFFlipViewer
                             maxShadowOpacity={0.5}
                             showCover={true}
                             mobileScrollSupport={true}
+                            onFlip={onPageChange}
                             className={`demo-book transition-transform duration-300`}
                         >
                             {Array.from(new Array(numPages), (el, index) => (
@@ -143,56 +166,78 @@ export default function PDFFlipViewer({ fileUrl, title, onClose }: PDFFlipViewer
                 </Document>
             </div>
 
-            {/* Footer Controls - Unified Design */}
-            <div className="flex items-center justify-between px-6 py-4 bg-black/50">
-                {/* Pagination */}
-                <div className="text-white text-sm min-w-[100px]">
-                    {numPages > 0 ? `${numPages} 페이지` : '로딩 중...'}
+            {/* Footer Controls */}
+            <div className="flex items-center px-6 py-4 bg-black/50">
+                {/* 현재 페이지 / 전체 페이지 — 좌측 고정 */}
+                <div className="text-white text-sm w-[110px] shrink-0">
+                    {numPages > 0 ? `${currentPage + 1} / ${numPages} 페이지` : '로딩 중...'}
                 </div>
 
-                {/* Zoom Controls */}
-                <div className="flex items-center bg-gray-800 rounded-lg p-1 gap-1">
-                    <button
-                        onClick={handleZoomOut}
-                        className="p-2 hover:bg-gray-700 rounded text-white disabled:opacity-30"
-                        disabled={scale <= 0.5}
-                        title="축소"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                        </svg>
-                    </button>
-                    <input
-                        type="number"
-                        min="50"
-                        max="200"
-                        step="10"
-                        value={Math.round(scale * 100)}
-                        onChange={(e) => handleZoomChange(e.target.value)}
-                        className="w-14 text-center bg-gray-700 text-white text-sm rounded px-1 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
-                    />
-                    <span className="text-white text-sm">%</span>
-                    <button
-                        onClick={handleZoomIn}
-                        className="p-2 hover:bg-gray-700 rounded text-white disabled:opacity-30"
-                        disabled={scale >= 2.0}
-                        title="확대"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                    </button>
+                {/* 확대/축소 + 이전/다음 — 중앙 정렬 */}
+                <div className="flex-1 flex items-center justify-center gap-3">
+                    {/* 축소/확대 */}
+                    <div className="flex items-center bg-gray-800 rounded-lg p-1 gap-1">
+                        <button
+                            onClick={handleZoomOut}
+                            className="p-2 hover:bg-gray-700 rounded text-white disabled:opacity-30"
+                            disabled={scale <= 0.5}
+                            title="축소"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                            </svg>
+                        </button>
+                        <input
+                            type="number"
+                            min="50"
+                            max="200"
+                            step="10"
+                            value={Math.round(scale * 100)}
+                            onChange={(e) => handleZoomChange(e.target.value)}
+                            className="w-14 text-center bg-gray-700 text-white text-sm rounded px-1 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        />
+                        <span className="text-white text-sm">%</span>
+                        <button
+                            onClick={handleZoomIn}
+                            className="p-2 hover:bg-gray-700 rounded text-white disabled:opacity-30"
+                            disabled={scale >= 2.0}
+                            title="확대"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* 구분선 */}
+                    <div className="w-px h-7 bg-white/20" />
+
+                    {/* 이전 / 다음 */}
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => flipBookRef.current?.pageFlip()?.flipPrev()}
+                            disabled={currentPage === 0}
+                            className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm"
+                        >
+                            ← 이전
+                        </button>
+                        <button
+                            onClick={() => flipBookRef.current?.pageFlip()?.flipNext()}
+                            disabled={currentPage >= numPages - 1}
+                            className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm"
+                        >
+                            다음 →
+                        </button>
+                    </div>
                 </div>
 
-                {/* Placeholder for navigation (PDF uses drag/click) */}
-                <div className="text-white text-sm min-w-[100px] text-right opacity-60">
-                    드래그로 넘김
-                </div>
+                {/* 우측 여백 균형용 스페이서 */}
+                <div className="w-[110px] shrink-0" />
             </div>
 
             {/* Instructions */}
             <div className="text-center text-white/60 text-xs pb-2">
-                좌우로 드래그하거나 클릭하여 페이지를 넘길 수 있습니다.
+                키보드 ← → 또는 드래그·클릭으로 페이지 넘김 | ESC 닫기
             </div>
         </div>
     );

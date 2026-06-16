@@ -32,7 +32,7 @@ type ViewMode = 'rich' | 'html' | 'markdown';
 export default function TiptapEditor({ value, onChange, placeholder, readOnly, className }: TiptapEditorProps) {
     const [viewMode, setViewMode] = useState<ViewMode>('rich');
     const [localValue, setLocalValue] = useState(value);
-    const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
+    const [mediaPickerMode, setMediaPickerMode] = useState<'image' | 'video' | null>(null);
     // Force re-render for active state updates
     const [, setTick] = useState(0);
 
@@ -110,53 +110,20 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
         editor.commands.setImage({ src: url });
     };
 
-    const handleVideoUpload = () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'video/mp4';
-        input.onchange = async (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const response = await fetch('/api/upload/video', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    alert(error.error || '업로드 실패');
-                    return;
-                }
-
-                const data = await response.json();
-                if (editor) {
-                    editor.commands.setVideo({ src: data.fileUrl });
-                }
-            } catch (error) {
-                console.error('Upload error:', error);
-                alert('업로드 중 오류가 발생했습니다.');
-            }
-        };
-        input.click();
-    };
-
     const handleMediaSelect = (selectedAssets: any[]) => {
         if (!editor) return;
 
         selectedAssets.forEach(asset => {
-            // Check if it's an image
-            if (asset.mimeType.startsWith('image/')) {
+            if (mediaPickerMode === 'video' || asset.mimeType?.startsWith('video/')) {
+                editor.commands.setVideo({ src: asset.path });
+            } else if (asset.mimeType?.startsWith('image/')) {
                 editor.chain().focus().setImage({
                     src: asset.path,
                     alt: asset.altText || asset.filename
                 }).run();
             }
         });
+        setMediaPickerMode(null);
     };
 
     const toggleViewMode = (mode: ViewMode) => {
@@ -316,7 +283,7 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
                     <Button onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="표 삽입">
                         <span className="text-lg">▦</span>
                     </Button>
-                    <Button onClick={() => setIsMediaPickerOpen(true)} title="미디어 라이브러리">
+                    <Button onClick={() => setMediaPickerMode('image')} title="미디어 라이브러리 (이미지)">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
@@ -327,7 +294,7 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
                     <Button onClick={handleYouTubeInsert} title="YouTube 영상">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="red"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg>
                     </Button>
-                    <Button onClick={handleVideoUpload} title="동영상 업로드 (MP4)">
+                    <Button onClick={() => setMediaPickerMode('video')} title="미디어 라이브러리 (동영상)">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" /></svg>
                     </Button>
                 </div>
@@ -437,12 +404,13 @@ export default function TiptapEditor({ value, onChange, placeholder, readOnly, c
                 }
             `}</style>
 
-            {/* Media Picker Modal */}
+            {/* Media Picker Modal — 이미지/동영상 공용 (mediaPickerMode로 구분) */}
             <MediaPickerModal
-                isOpen={isMediaPickerOpen}
-                onClose={() => setIsMediaPickerOpen(false)}
+                isOpen={mediaPickerMode !== null}
+                onClose={() => setMediaPickerMode(null)}
                 onSelect={handleMediaSelect}
-                selectionMode="multiple"
+                selectionMode={mediaPickerMode === 'image' ? 'multiple' : 'single'}
+                title={mediaPickerMode === 'video' ? '동영상 선택' : '이미지 선택'}
             />
         </div>
     );

@@ -12,7 +12,9 @@ export async function GET(request: NextRequest) {
         });
 
         const visibility = setting ? JSON.parse(setting.value) : {};
-        return NextResponse.json({ visibility });
+        return NextResponse.json({ visibility }, {
+            headers: { 'Cache-Control': 'no-store, max-age=0' },
+        });
     } catch (error) {
         console.error('Error fetching menu settings:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
