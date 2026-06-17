@@ -251,3 +251,22 @@
 .hero-text-glow {
   animation: heroTitleGlow 2.5s ease-in-out infinite;
 }
+
+/* ============================================
+   Hero Marquee Banner
+   ============================================ */
+
+@keyframes heroMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.hero-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: heroMarquee 28s linear infinite;
+}
+
+.hero-marquee-wrap:hover .hero-marquee-track {
+  animation-play-state: paused;
+}

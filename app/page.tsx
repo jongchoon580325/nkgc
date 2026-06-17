@@ -1,5 +1,6 @@
 import NoticeBar from '@/components/sections/NoticeBar'
 import HeroSection from '@/components/sections/HeroSection'
+import HeroMarquee from '@/components/sections/HeroMarquee'
 import QuickActions from '@/components/sections/QuickActions'
 import NoticeNews from '@/components/sections/NoticeNews'
 import Gallery from '@/components/sections/Gallery'
@@ -35,6 +36,9 @@ export default async function HomePage() {
 
             {/* 1단: Coram Deo */}
             <HeroSection />
+
+            {/* 마퀴 배너 (아이템 없으면 미노출) */}
+            <HeroMarquee />
 
             {/* 2단: 주요 서비스 */}
             <QuickActions />

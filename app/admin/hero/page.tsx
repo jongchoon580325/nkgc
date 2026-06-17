@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+interface MarqueeItem { name: string; url: string; }
+
 interface HeroConfig {
     id: number;
     name: string;
@@ -20,8 +22,18 @@ export default function HeroAdminPage() {
     const [configs, setConfigs] = useState<HeroConfig[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // 마퀴 상태
+    const [marqueeItems, setMarqueeItems] = useState<MarqueeItem[]>([]);
+    const [newName, setNewName] = useState('');
+    const [newUrl, setNewUrl] = useState('');
+    const [marqueeSaving, setMarqueeSaving] = useState(false);
+
     useEffect(() => {
         fetchConfigs();
+        fetch('/api/admin/hero/marquee')
+            .then(r => r.json())
+            .then(d => setMarqueeItems(d.items || []))
+            .catch(() => {});
     }, []);
 
     const fetchConfigs = async () => {
@@ -75,6 +87,39 @@ export default function HeroAdminPage() {
             console.error('Error deleting config:', error);
             alert('삭제에 실패했습니다.');
         }
+    };
+
+    const saveMarquee = async (items: MarqueeItem[]) => {
+        setMarqueeSaving(true);
+        try {
+            await fetch('/api/admin/hero/marquee', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items }),
+            });
+            setMarqueeItems(items);
+        } finally {
+            setMarqueeSaving(false);
+        }
+    };
+
+    const addMarqueeItem = async () => {
+        if (!newName.trim() || !newUrl.trim()) return;
+        if (marqueeItems.length >= 7) { alert('최대 7개까지 등록 가능합니다.'); return; }
+        const updated = [...marqueeItems, { name: newName.trim(), url: newUrl.trim() }];
+        await saveMarquee(updated);
+        setNewName(''); setNewUrl('');
+    };
+
+    const removeMarqueeItem = (idx: number) =>
+        saveMarquee(marqueeItems.filter((_, i) => i !== idx));
+
+    const moveMarqueeItem = (idx: number, dir: -1 | 1) => {
+        const arr = [...marqueeItems];
+        const target = idx + dir;
+        if (target < 0 || target >= arr.length) return;
+        [arr[idx], arr[target]] = [arr[target], arr[idx]];
+        saveMarquee(arr);
     };
 
     const handleCreateNew = () => {
@@ -195,6 +240,131 @@ export default function HeroAdminPage() {
                         >
                             첫 번째 프리셋 만들기
                         </button>
+                    </div>
+                )}
+            </div>
+
+            {/* ── 마퀴 배너 관리 ── */}
+            <div className="mt-12">
+                <h2 className="text-2xl font-bold mb-2">마퀴 배너 관리</h2>
+                <p className="text-gray-500 text-sm mb-6">
+                    Hero 하단에 무한 흐르는 링크 배너입니다. 최대 7개 · 0개이면 미노출.
+                </p>
+
+                {/* 등록된 아이템 목록 */}
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
+                    {marqueeItems.length === 0 ? (
+                        <p className="text-center text-gray-400 py-10 text-sm">등록된 배너 항목이 없습니다.</p>
+                    ) : (
+                        <table className="w-full text-sm">
+                            <thead className="bg-gray-50 text-gray-600">
+                                <tr>
+                                    <th className="px-4 py-3 text-left font-medium w-8">#</th>
+                                    <th className="px-4 py-3 text-left font-medium">이름</th>
+                                    <th className="px-4 py-3 text-left font-medium">URL</th>
+                                    <th className="px-4 py-3 text-center font-medium w-28">순서</th>
+                                    <th className="px-4 py-3 text-center font-medium w-16">삭제</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {marqueeItems.map((item, idx) => (
+                                    <tr key={idx} className="hover:bg-gray-50">
+                                        <td className="px-4 py-3 text-gray-400">{idx + 1}</td>
+                                        <td className="px-4 py-3 font-medium text-gray-800">{item.name}</td>
+                                        <td className="px-4 py-3 text-gray-500 truncate max-w-xs">
+                                            <a href={item.url} target="_blank" rel="noopener noreferrer"
+                                                className="hover:text-blue-600 hover:underline">{item.url}</a>
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <div className="flex justify-center gap-1">
+                                                <button type="button" onClick={() => moveMarqueeItem(idx, -1)}
+                                                    disabled={idx === 0 || marqueeSaving}
+                                                    className="p-1 rounded hover:bg-gray-200 disabled:opacity-30 transition">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                                    </svg>
+                                                </button>
+                                                <button type="button" onClick={() => moveMarqueeItem(idx, 1)}
+                                                    disabled={idx === marqueeItems.length - 1 || marqueeSaving}
+                                                    className="p-1 rounded hover:bg-gray-200 disabled:opacity-30 transition">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <button type="button" onClick={() => removeMarqueeItem(idx)}
+                                                disabled={marqueeSaving}
+                                                className="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+
+                {/* 새 항목 추가 폼 */}
+                {marqueeItems.length < 7 && (
+                    <div className="bg-white rounded-xl border border-gray-200 p-5">
+                        <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                            새 항목 추가 ({marqueeItems.length}/7)
+                        </h3>
+                        <div className="flex gap-3 items-end">
+                            <div className="flex-1">
+                                <label className="block text-xs text-gray-500 mb-1">이름</label>
+                                <input
+                                    type="text"
+                                    value={newName}
+                                    onChange={e => setNewName(e.target.value)}
+                                    placeholder="예: 대한예수교장로회총회"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    onKeyDown={e => e.key === 'Enter' && addMarqueeItem()}
+                                />
+                            </div>
+                            <div className="flex-[2]">
+                                <label className="block text-xs text-gray-500 mb-1">URL</label>
+                                <input
+                                    type="text"
+                                    value={newUrl}
+                                    onChange={e => setNewUrl(e.target.value)}
+                                    placeholder="https://example.com"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    onKeyDown={e => e.key === 'Enter' && addMarqueeItem()}
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                onClick={addMarqueeItem}
+                                disabled={marqueeSaving || !newName.trim() || !newUrl.trim()}
+                                className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+                            >
+                                {marqueeSaving ? '저장 중...' : '추가'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* 미리보기 */}
+                {marqueeItems.length > 0 && (
+                    <div className="mt-6">
+                        <p className="text-xs text-gray-400 mb-2">미리보기</p>
+                        <div className="bg-white rounded-xl border border-gray-200 py-4 overflow-hidden">
+                            <div className="flex flex-wrap gap-[18px] px-4">
+                                {marqueeItems.map((item, i) => (
+                                    <span key={i}
+                                        className="inline-flex items-center px-5 py-2 rounded-2xl text-sm font-medium text-gray-700"
+                                        style={{ backgroundColor: '#dbd9d9', border: '1px solid #b5b3b3' }}>
+                                        {item.name}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
