@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Camera } from 'lucide-react';
 
 interface GalleryImage {
     id: number
@@ -104,7 +105,8 @@ export default function Gallery() {
             <section className="section-padding bg-gray-50">
                 <div className="container-custom">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
+                            <Camera className="w-7 h-7 text-blue-600" />
                             PHOTO GALLERY
                         </h2>
                         <p className="text-gray-600 text-lg">

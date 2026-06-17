@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Bell } from 'lucide-react'
 
 export interface NoticePost {
     id: number
@@ -75,7 +76,8 @@ export default function NoticeNews({ initialNotices = [] }: NoticeNewsProps) {
     return (
         <div className="h-full">
             <div className="mb-8 text-center">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-2">
+                    <Bell className="w-7 h-7 text-blue-600" />
                     노회 공지 & 소식
                 </h2>
                 <p className="text-gray-600">
