@@ -90,6 +90,8 @@ export default function HeroForm({ initialData, onSubmit, submitLabel = '저장'
     const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
     const [isVideoPickerOpen, setIsVideoPickerOpen] = useState(false);
     const [recentColors, setRecentColors] = useState<string[]>([]);
+    const [isColorOpen, setIsColorOpen] = useState(false);
+    const [isAnimOpen, setIsAnimOpen] = useState(false);
     const colorInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -363,102 +365,147 @@ export default function HeroForm({ initialData, onSubmit, submitLabel = '저장'
                             </div>
 
                             {/* 타이틀 폰트 컬러 */}
-                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <label className="block text-sm font-medium text-gray-700 mb-3">타이틀 폰트 컬러</label>
-
-                                {/* 프리셋 색상 */}
-                                <div className="flex flex-wrap gap-2 mb-3">
-                                    {PRESET_COLORS.map(({ hex, label }) => (
-                                        <button
-                                            key={hex}
-                                            type="button"
-                                            title={label}
-                                            onClick={() => applyTitleColor(hex)}
-                                            className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110"
-                                            style={{
-                                                backgroundColor: hex,
-                                                borderColor: formData.titleColor === hex ? '#3b82f6' : '#d1d5db',
-                                                boxShadow: formData.titleColor === hex ? '0 0 0 2px #3b82f6' : undefined,
-                                            }}
+                            <div className="rounded-xl border border-gray-200 overflow-hidden">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsColorOpen(v => !v)}
+                                    className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <span
+                                            className="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0"
+                                            style={{ backgroundColor: formData.titleColor }}
                                         />
-                                    ))}
-                                </div>
+                                        <span className="text-sm font-medium text-gray-700">타이틀 폰트 컬러</span>
+                                        <span className="text-xs text-gray-400 font-mono">{formData.titleColor}</span>
+                                    </div>
+                                    <svg
+                                        className={`w-4 h-4 text-gray-500 transition-transform ${isColorOpen ? 'rotate-180' : ''}`}
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
 
-                                {/* 최근 사용 색상 */}
-                                {recentColors.length > 0 && (
-                                    <div className="mb-3">
-                                        <p className="text-xs text-gray-400 mb-1">최근 사용</p>
-                                        <div className="flex gap-2">
-                                            {recentColors.map(hex => (
+                                {isColorOpen && (
+                                    <div className="p-4 bg-white space-y-3">
+                                        {/* 프리셋 색상 */}
+                                        <div className="flex flex-wrap gap-2">
+                                            {PRESET_COLORS.map(({ hex, label }) => (
                                                 <button
                                                     key={hex}
                                                     type="button"
-                                                    title={hex}
+                                                    title={label}
                                                     onClick={() => applyTitleColor(hex)}
-                                                    className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
+                                                    className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110"
                                                     style={{
                                                         backgroundColor: hex,
-                                                        borderColor: formData.titleColor === hex ? '#3b82f6' : '#e5e7eb',
+                                                        borderColor: formData.titleColor === hex ? '#3b82f6' : '#d1d5db',
+                                                        boxShadow: formData.titleColor === hex ? '0 0 0 2px #3b82f6' : undefined,
                                                     }}
                                                 />
                                             ))}
                                         </div>
+
+                                        {/* 최근 사용 색상 */}
+                                        {recentColors.length > 0 && (
+                                            <div>
+                                                <p className="text-xs text-gray-400 mb-1">최근 사용</p>
+                                                <div className="flex gap-2">
+                                                    {recentColors.map(hex => (
+                                                        <button
+                                                            key={hex}
+                                                            type="button"
+                                                            title={hex}
+                                                            onClick={() => applyTitleColor(hex)}
+                                                            className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
+                                                            style={{
+                                                                backgroundColor: hex,
+                                                                borderColor: formData.titleColor === hex ? '#3b82f6' : '#e5e7eb',
+                                                            }}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* 사용자 지정 */}
+                                        <div className="flex items-center gap-3">
+                                            <input
+                                                ref={colorInputRef}
+                                                type="color"
+                                                value={formData.titleColor}
+                                                onChange={e => applyTitleColor(e.target.value)}
+                                                className="sr-only"
+                                                aria-hidden
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => colorInputRef.current?.click()}
+                                                className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:border-blue-400 transition"
+                                            >
+                                                <span
+                                                    className="w-5 h-5 rounded-full border border-gray-300 inline-block"
+                                                    style={{ backgroundColor: formData.titleColor }}
+                                                />
+                                                사용자 지정
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
-
-                                {/* 사용자 지정 */}
-                                <div className="flex items-center gap-3">
-                                    <input
-                                        ref={colorInputRef}
-                                        type="color"
-                                        value={formData.titleColor}
-                                        onChange={e => applyTitleColor(e.target.value)}
-                                        className="sr-only"
-                                        aria-hidden
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => colorInputRef.current?.click()}
-                                        className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:border-blue-400 transition"
-                                    >
-                                        <span
-                                            className="w-5 h-5 rounded-full border border-gray-300 inline-block"
-                                            style={{ backgroundColor: formData.titleColor }}
-                                        />
-                                        사용자 지정
-                                    </button>
-                                    <span className="text-xs text-gray-500 font-mono">{formData.titleColor}</span>
-                                </div>
                             </div>
 
                             {/* 타이틀 텍스트 애니메이션 */}
-                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <label className="block text-sm font-medium text-gray-700 mb-3">타이틀 텍스트 애니메이션</label>
-                                <div className="flex flex-col gap-2">
-                                    {TITLE_ANIMATION_OPTIONS.map(opt => (
-                                        <label
-                                            key={opt.value}
-                                            className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition ${
-                                                formData.titleAnimation === opt.value
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
-                                            }`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="titleAnimation"
-                                                value={opt.value}
-                                                checked={formData.titleAnimation === opt.value}
-                                                onChange={handleChange}
-                                                className="text-blue-600"
-                                            />
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-800">{opt.label}</p>
-                                                <p className="text-xs text-gray-500">{opt.desc}</p>
-                                            </div>
-                                        </label>
-                                    ))}
-                                </div>
+                            <div className="rounded-xl border border-gray-200 overflow-hidden">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsAnimOpen(v => !v)}
+                                    className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                        <span className="text-sm font-medium text-gray-700">타이틀 텍스트 애니메이션</span>
+                                        <span className="text-xs text-gray-400">
+                                            {TITLE_ANIMATION_OPTIONS.find(o => o.value === formData.titleAnimation)?.label ?? '없음'}
+                                        </span>
+                                    </div>
+                                    <svg
+                                        className={`w-4 h-4 text-gray-500 transition-transform ${isAnimOpen ? 'rotate-180' : ''}`}
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                {isAnimOpen && (
+                                    <div className="p-4 bg-white flex flex-col gap-2">
+                                        {TITLE_ANIMATION_OPTIONS.map(opt => (
+                                            <label
+                                                key={opt.value}
+                                                className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition ${
+                                                    formData.titleAnimation === opt.value
+                                                        ? 'border-blue-500 bg-blue-50'
+                                                        : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="titleAnimation"
+                                                    value={opt.value}
+                                                    checked={formData.titleAnimation === opt.value}
+                                                    onChange={handleChange}
+                                                    className="text-blue-600"
+                                                />
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-800">{opt.label}</p>
+                                                    <p className="text-xs text-gray-500">{opt.desc}</p>
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             <div>
