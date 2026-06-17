@@ -12,6 +12,8 @@ interface HeroFormData {
     animationSpeed: string;
     hideText: boolean;
     titleText: string;
+    titleColor: string;
+    titleAnimation: string;
     subtitleText: string;
     motto1: string;
     motto2: string;

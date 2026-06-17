@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function getYouTubeId(url: string): string | null {
     const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([^&\n?#]{11})/);
@@ -23,6 +24,8 @@ interface HeroConfig {
     animationSpeed: string;
     hideText: boolean;
     titleText: string | null;
+    titleColor: string | null;
+    titleAnimation: string | null;
     subtitleText: string | null;
     motto1: string | null;
     motto2: string | null;
@@ -166,11 +169,28 @@ export default function HeroSection() {
                     {showText && (
                         <>
                             {/* Main Slogan */}
-                            {config?.titleText && (
-                                <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight">
-                                    {config.titleText}
-                                </h1>
-                            )}
+                            {config?.titleText && (() => {
+                                const anim = config.titleAnimation || 'none';
+                                const color = config.titleColor || '#ffffff';
+                                const isGlow = anim === 'glow';
+                                const isFadeZoom = anim === 'fadeInZoom';
+                                const h1Class = `text-5xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight${isGlow ? ' hero-text-glow' : ''}`;
+                                return isFadeZoom ? (
+                                    <motion.h1
+                                        className={h1Class}
+                                        style={{ color }}
+                                        initial={{ opacity: 0, scale: 0.85 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ duration: 0.9, ease: 'easeOut' }}
+                                    >
+                                        {config.titleText}
+                                    </motion.h1>
+                                ) : (
+                                    <h1 className={h1Class} style={{ color }}>
+                                        {config.titleText}
+                                    </h1>
+                                );
+                            })()}
 
                             {/* Organization Name */}
                             {config?.subtitleText && (

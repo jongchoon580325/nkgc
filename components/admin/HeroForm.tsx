@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import MediaPickerModal from '@/components/media/MediaPickerModal';
 
@@ -22,6 +22,8 @@ interface HeroFormData {
     animationSpeed: string;
     hideText: boolean;
     titleText: string;
+    titleColor: string;
+    titleAnimation: string;
     subtitleText: string;
     motto1: string;
     motto2: string;
@@ -63,11 +65,39 @@ const SPEED_CLASSES: Record<string, string> = {
     fast: 'hero-speed-fast',
 };
 
+const PRESET_COLORS = [
+    { hex: '#ffffff', label: '흰색' },
+    { hex: '#ffd700', label: '금색' },
+    { hex: '#87CEEB', label: '하늘색' },
+    { hex: '#ffff99', label: '연노랑' },
+    { hex: '#98FB98', label: '연초록' },
+    { hex: '#FFB6C1', label: '연분홍' },
+    { hex: '#E6E6FA', label: '연보라' },
+    { hex: '#FFA500', label: '주황' },
+];
+
+const TITLE_ANIMATION_OPTIONS = [
+    { value: 'none', label: '없음', desc: '효과 없이 바로 표시' },
+    { value: 'fadeInZoom', label: 'FadeIn + ZoomIn', desc: '서서히 나타나며 살짝 커짐' },
+    { value: 'glow', label: 'Glow', desc: '발광 반복 효과' },
+];
+
+const RECENT_COLORS_KEY = 'heroTitleRecentColors';
+
 export default function HeroForm({ initialData, onSubmit, submitLabel = '저장' }: HeroFormProps) {
     const router = useRouter();
     const [saving, setSaving] = useState(false);
     const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
     const [isVideoPickerOpen, setIsVideoPickerOpen] = useState(false);
+    const [recentColors, setRecentColors] = useState<string[]>([]);
+    const colorInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        try {
+            const stored = localStorage.getItem(RECENT_COLORS_KEY);
+            if (stored) setRecentColors(JSON.parse(stored));
+        } catch {}
+    }, []);
 
     const [formData, setFormData] = useState<HeroFormData>({
         name: initialData?.name || '',
@@ -78,6 +108,8 @@ export default function HeroForm({ initialData, onSubmit, submitLabel = '저장'
         animationSpeed: initialData?.animationSpeed || 'normal',
         hideText: initialData?.hideText || false,
         titleText: initialData?.titleText || '',
+        titleColor: initialData?.titleColor || '#ffffff',
+        titleAnimation: initialData?.titleAnimation || 'none',
         subtitleText: initialData?.subtitleText || '',
         motto1: initialData?.motto1 || '',
         motto2: initialData?.motto2 || '',
@@ -93,6 +125,15 @@ export default function HeroForm({ initialData, onSubmit, submitLabel = '저장'
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
+    };
+
+    const applyTitleColor = (hex: string) => {
+        setFormData(prev => ({ ...prev, titleColor: hex }));
+        setRecentColors(prev => {
+            const next = [hex, ...prev.filter(c => c !== hex)].slice(0, 5);
+            try { localStorage.setItem(RECENT_COLORS_KEY, JSON.stringify(next)); } catch {}
+            return next;
+        });
     };
 
     const handleImageMediaSelect = (assets: any[]) => {
@@ -320,6 +361,106 @@ export default function HeroForm({ initialData, onSubmit, submitLabel = '저장'
                                     placeholder="예: Coram Deo"
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                             </div>
+
+                            {/* 타이틀 폰트 컬러 */}
+                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                <label className="block text-sm font-medium text-gray-700 mb-3">타이틀 폰트 컬러</label>
+
+                                {/* 프리셋 색상 */}
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                    {PRESET_COLORS.map(({ hex, label }) => (
+                                        <button
+                                            key={hex}
+                                            type="button"
+                                            title={label}
+                                            onClick={() => applyTitleColor(hex)}
+                                            className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110"
+                                            style={{
+                                                backgroundColor: hex,
+                                                borderColor: formData.titleColor === hex ? '#3b82f6' : '#d1d5db',
+                                                boxShadow: formData.titleColor === hex ? '0 0 0 2px #3b82f6' : undefined,
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* 최근 사용 색상 */}
+                                {recentColors.length > 0 && (
+                                    <div className="mb-3">
+                                        <p className="text-xs text-gray-400 mb-1">최근 사용</p>
+                                        <div className="flex gap-2">
+                                            {recentColors.map(hex => (
+                                                <button
+                                                    key={hex}
+                                                    type="button"
+                                                    title={hex}
+                                                    onClick={() => applyTitleColor(hex)}
+                                                    className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
+                                                    style={{
+                                                        backgroundColor: hex,
+                                                        borderColor: formData.titleColor === hex ? '#3b82f6' : '#e5e7eb',
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 사용자 지정 */}
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        ref={colorInputRef}
+                                        type="color"
+                                        value={formData.titleColor}
+                                        onChange={e => applyTitleColor(e.target.value)}
+                                        className="sr-only"
+                                        aria-hidden
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => colorInputRef.current?.click()}
+                                        className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:border-blue-400 transition"
+                                    >
+                                        <span
+                                            className="w-5 h-5 rounded-full border border-gray-300 inline-block"
+                                            style={{ backgroundColor: formData.titleColor }}
+                                        />
+                                        사용자 지정
+                                    </button>
+                                    <span className="text-xs text-gray-500 font-mono">{formData.titleColor}</span>
+                                </div>
+                            </div>
+
+                            {/* 타이틀 텍스트 애니메이션 */}
+                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                <label className="block text-sm font-medium text-gray-700 mb-3">타이틀 텍스트 애니메이션</label>
+                                <div className="flex flex-col gap-2">
+                                    {TITLE_ANIMATION_OPTIONS.map(opt => (
+                                        <label
+                                            key={opt.value}
+                                            className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition ${
+                                                formData.titleAnimation === opt.value
+                                                    ? 'border-blue-500 bg-blue-50'
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                            }`}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="titleAnimation"
+                                                value={opt.value}
+                                                checked={formData.titleAnimation === opt.value}
+                                                onChange={handleChange}
+                                                className="text-blue-600"
+                                            />
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-800">{opt.label}</p>
+                                                <p className="text-xs text-gray-500">{opt.desc}</p>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
                             <div>
                                 <label className="block text-sm text-gray-600 mb-1">서브타이틀</label>
                                 <input type="text" name="subtitleText" value={formData.subtitleText} onChange={handleChange}
@@ -427,7 +568,14 @@ export default function HeroForm({ initialData, onSubmit, submitLabel = '저장'
                         <div className="max-w-lg">
                             {!formData.hideText ? (
                                 <>
-                                    {formData.titleText && <h1 className="text-3xl md:text-4xl font-bold mb-3">{formData.titleText}</h1>}
+                                    {formData.titleText && (
+                                        <h1
+                                            className={`text-3xl md:text-4xl font-bold mb-3 ${formData.titleAnimation === 'glow' ? 'hero-text-glow' : ''}`}
+                                            style={{ color: formData.titleColor || '#ffffff' }}
+                                        >
+                                            {formData.titleText}
+                                        </h1>
+                                    )}
                                     {formData.subtitleText && <p className="text-lg md:text-xl mb-4 opacity-95">{formData.subtitleText}</p>}
                                     <div className="mb-4 space-y-2 text-sm md:text-base">
                                         {formData.motto1 && <p className="font-bold">{formData.motto1}</p>}

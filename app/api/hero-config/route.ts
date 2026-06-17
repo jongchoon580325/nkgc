@@ -57,6 +57,8 @@ export async function POST(request: NextRequest) {
                 animationSpeed: data.animationSpeed || 'normal',
                 hideText: data.hideText || false,
                 titleText: data.titleText || null,
+                titleColor: data.titleColor || '#ffffff',
+                titleAnimation: data.titleAnimation || 'none',
                 subtitleText: data.subtitleText || null,
                 motto1: data.motto1 || null,
                 motto2: data.motto2 || null,

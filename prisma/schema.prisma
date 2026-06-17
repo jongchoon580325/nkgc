@@ -214,6 +214,8 @@ model HeroConfig {
   animationSpeed        String   @default("normal") @map("animation_speed")
   hideText              Boolean  @default(false) @map("hide_text")
   titleText             String?  @map("title_text")
+  titleColor            String?  @default("#ffffff") @map("title_color")
+  titleAnimation        String?  @default("none") @map("title_animation")
   subtitleText          String?  @map("subtitle_text")
   motto1                String?
   motto2                String?

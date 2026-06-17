@@ -13,6 +13,8 @@ interface HeroFormData {
     animationSpeed: string;
     hideText: boolean;
     titleText: string;
+    titleColor: string;
+    titleAnimation: string;
     subtitleText: string;
     motto1: string;
     motto2: string;
@@ -123,6 +125,8 @@ export default function EditHeroPresetPage() {
                     animationSpeed: config.animationSpeed || 'normal',
                     hideText: config.hideText || false,
                     titleText: config.titleText || '',
+                    titleColor: config.titleColor || '#ffffff',
+                    titleAnimation: config.titleAnimation || 'none',
                     subtitleText: config.subtitleText || '',
                     motto1: config.motto1 || '',
                     motto2: config.motto2 || '',
