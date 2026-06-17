@@ -74,12 +74,12 @@ export default function NoticeNews({ initialNotices = [] }: NoticeNewsProps) {
 
     return (
         <div className="h-full">
-            <div className="mb-8 text-center md:text-left">
+            <div className="mb-8 text-center">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
                     노회 공지 & 소식
                 </h2>
                 <p className="text-gray-600">
-                    노회의 최신 소식과 공지사항을 확인하세요
+                    노회의 최신 소식과 공지사항을 확인하세요.
                 </p>
             </div>
 
