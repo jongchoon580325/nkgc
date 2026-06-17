@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { upload } from '@vercel/blob/client';
 
 interface Officer {
     position: string;
@@ -87,20 +88,19 @@ export default function AdminCurrentOfficersPage() {
         setUploadingIndex(index);
 
         try {
-            const formData = new FormData();
-            formData.append('file', file);
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+            const pathname = `media/${year}/${month}/${safeName}`;
 
-            const response = await fetch('/api/media/upload', {
-                method: 'POST',
-                body: formData,
+            const blob = await upload(pathname, file, {
+                access: 'public',
+                handleUploadUrl: '/api/media/upload',
+                clientPayload: JSON.stringify({ size: file.size }),
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                handleOfficerChange(index, 'photo', result.fileUrl);
-            } else {
-                alert('❌ 사진 업로드 실패');
-            }
+            handleOfficerChange(index, 'photo', blob.url);
         } catch (error) {
             alert('❌ 업로드 중 오류 발생');
         } finally {

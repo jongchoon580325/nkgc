@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { upload } from '@vercel/blob/client';
 import { buildFolderTree } from '@/lib/utils/media';
 import { getAllFolders, createFolder } from '@/app/actions/folders';
 
@@ -56,21 +57,20 @@ export default function MediaUploader({
         setUploading(true);
 
         for (const file of files) {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            // Explicitly append folderId if it exists
-            if (targetFolderId) {
-                formData.append('folderId', targetFolderId);
-            } else {
-            }
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+            const pathname = `media/${year}/${month}/${safeName}`;
 
             try {
-                const res = await fetch('/api/media/upload', { method: 'POST', body: formData });
-                if (!res.ok) throw new Error('Upload failed');
-                const result = await res.json();
-            }
-            catch (e: any) {
+                await upload(pathname, file, {
+                    access: 'public',
+                    handleUploadUrl: '/api/media/upload',
+                    clientPayload: JSON.stringify({ folderId: targetFolderId, size: file.size }),
+                    multipart: file.size > 5 * 1024 * 1024,
+                });
+            } catch (e: any) {
                 console.error(e);
                 safeAlert('업로드 실패', e.message || file.name);
             }
