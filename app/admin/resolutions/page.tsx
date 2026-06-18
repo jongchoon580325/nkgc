@@ -690,7 +690,7 @@ export default function ResolutionsAdminPage() {
                                             <th className="px-6 py-4 text-left font-bold text-gray-700">회기</th>
                                             <th className="px-6 py-4 text-left font-bold text-gray-700">제목</th>
                                             <th className="px-6 py-4 text-left font-bold text-gray-700">파일 타입</th>
-                                            <th className="px-6 py-4 text-center font-bold text-gray-700">액션</th>
+                                            <th className="px-6 py-4 text-center font-bold text-gray-700">관리</th>
                                         </tr>
                                     </thead>
 

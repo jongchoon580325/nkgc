@@ -442,7 +442,40 @@ export default function MeetingMinutesAdminPage() {
                                                                 </td>
 
                                                                 <td className="px-6 py-4 text-center">
-                                                                    <div className="flex justify-center gap-2">
+                                                                    <div className="flex justify-center gap-2 flex-wrap">
+                                                                        {item.attachments?.length === 1 && (
+                                                                            <a
+                                                                                href={item.attachments[0].fileUrl}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                                                            >
+                                                                                보기
+                                                                            </a>
+                                                                        )}
+                                                                        {item.attachments?.length > 1 && (
+                                                                            <details className="relative">
+                                                                                <summary className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer list-none select-none">
+                                                                                    보기 ({item.attachments.length})
+                                                                                </summary>
+                                                                                <div className="absolute left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-48">
+                                                                                    {item.attachments.map((att, i) => (
+                                                                                        <a
+                                                                                            key={i}
+                                                                                            href={att.fileUrl}
+                                                                                            target="_blank"
+                                                                                            rel="noopener noreferrer"
+                                                                                            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
+                                                                                        >
+                                                                                            <svg className="w-3 h-3 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                                                                            </svg>
+                                                                                            <span className="truncate max-w-40">{att.fileName}</span>
+                                                                                        </a>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </details>
+                                                                        )}
                                                                         <button
                                                                             onClick={() => handleOpenModal(item)}
                                                                             className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
