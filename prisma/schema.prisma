@@ -116,21 +116,22 @@ model FeeStatus {
 }
 
 model Post {
-  id          Int          @id @default(autoincrement())
-  boardType   String       @map("board_type")
-  title       String
-  content     String
-  authorId    Int          @map("author_id")
-  authorName  String?      @map("author_name")
-  viewCount   Int          @default(0) @map("view_count")
-  isNotice    Boolean      @default(false) @map("is_notice")
-  category    String?      @map("category")
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  attachments Attachment[]
-  comments    Comment[]
-  likes       Like[]
-  author      User         @relation(fields: [authorId], references: [id])
+  id           Int          @id @default(autoincrement())
+  boardType    String       @map("board_type")
+  title        String
+  content      String
+  authorId     Int          @map("author_id")
+  authorName   String?      @map("author_name")
+  viewCount    Int          @default(0) @map("view_count")
+  isNotice     Boolean      @default(false) @map("is_notice")
+  category     String?      @map("category")
+  displayOrder Int          @default(0) @map("display_order")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  attachments  Attachment[]
+  comments     Comment[]
+  likes        Like[]
+  author       User         @relation(fields: [authorId], references: [id])
 
   @@map("posts")
 }

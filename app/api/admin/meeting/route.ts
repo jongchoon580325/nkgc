@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
                 where,
                 skip,
                 take: limit,
-                orderBy: { createdAt: 'desc' },
+                orderBy: [{ displayOrder: 'asc' }, { createdAt: 'desc' }],
                 include: {
                     attachments: true,
                 },
@@ -175,6 +175,38 @@ export async function PUT(request: NextRequest) {
         return NextResponse.json(post);
     } catch (error) {
         console.error('Error updating meeting minutes:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+// PATCH: D&D 순서 일괄 저장
+// body: { orders: [{ id: number, displayOrder: number }, ...] }
+export async function PATCH(request: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session || !session.user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const body = await request.json();
+        const orders: { id: number; displayOrder: number }[] = body.orders;
+
+        if (!Array.isArray(orders) || orders.length === 0) {
+            return NextResponse.json({ error: '순서 데이터가 없습니다.' }, { status: 400 });
+        }
+
+        await prisma.$transaction(
+            orders.map(({ id, displayOrder }) =>
+                prisma.post.update({
+                    where: { id, boardType: BOARD_TYPE },
+                    data: { displayOrder },
+                })
+            )
+        );
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Error updating order:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
